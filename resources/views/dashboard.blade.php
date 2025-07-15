@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
+
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Dashboard</title>
   <style>
@@ -12,85 +14,158 @@
       box-sizing: border-box;
     }
     body {
-      font-family: Arial, sans-serif;
-      background-color: #7D8B60;
-      min-height: 100vh;
-      display: flex;
-    }
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            background: url("../images/coverwel2.png") no-repeat center center/cover;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+        body::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 110%;
+        background: rgba(32, 32, 32, 0.5);
+        z-index: -1;
+      }
     /* Sidebar */
     .sidebar {
-      width: 250px;
-      background-color: #f3f4f6;
-      display: flex;
-      flex-direction: column;
-      padding: 16px;
-    }
-    .profile-section {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .profile-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #c8a2c8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 8px;
-    }
-    .profile-icon svg {
-      width: 16px;
-      height: 16px;
-    }
-    .profile-name {
-      font-weight: bold;
-      font-size: 0.95rem;
-    }
-    /* Sidebar nav */
-    .sidebar-nav {
-      flex: 1;
-    }
-    .nav-item {
-      margin-bottom: 8px;
-    }
-    .nav-link {
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-      color: #333;
-      padding: 6px;
-      border-radius: 4px;
-      font-size: 0.85rem;
-    }
-    .nav-link:hover {
-      background-color: #e5e7eb;
-    }
-    .nav-icon {
-      width: 16px;
-      height: 16px;
-      margin-right: 6px;
-    }
-    /* Logout */
-    .logout-btn {
-      display: flex;
-      align-items: center;
-      color: #b91c1c;
-      text-decoration: none;
-      padding: 6px;
-      border-radius: 4px;
-      margin-top: auto;
-      font-size: 0.85rem;
-    }
-    .logout-btn:hover {
-      background-color: #e5e7eb;
-    }
-    .logout-btn .nav-icon {
-      width: 16px;
-      height: 16px;
-      margin-right: 6px;
-    }
+            width: 270px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            left: -270px; /* Initially hidden */
+            top: 0;
+            height: 100%;
+            transition: left 0.4s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            border-radius: 0 20px 20px 0;
+            z-index: 1000;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        /* Back Button */
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px;
+            border: none;
+            font-size: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s;
+            width: 100%;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #c8a2c8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+        }
+
+        .profile-name {
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+            font-size: 0.9rem;
+            padding: 12px;
+            border-radius: 10px;
+            transition: background 0.3s, transform 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        /* Logout Button */
+        .logout-btn {
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            background: rgba(255, 0, 0, 0.6);
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 0, 0, 0.8);
+            transform: scale(1.05);
+        }
+
+        /* Hamburger Button */
+        .hamburger {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: #333;
+            color: white;
+            padding: 12px;
+            border: none;
+            font-size: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s;
+            z-index: 1001;
+        }
+
+        .hamburger:hover {
+            background: #555;
+            transform: scale(1.05);
+        }
+
+        /* Main Content */
+         /* Main Content */
+         .main-content {
+            flex: 1;
+            padding: 40px;
+            color: white;
+            margin-left: 0;
+            transition: margin-left 0.3s ease;
+            width: 100%;
+            
+        }
+
+        .sidebar.active ~ .main-content {
+            margin-left: 290px;
+        }
+
     /* Main Content */
     .main-content {
       flex: 1;
@@ -99,6 +174,8 @@
       display: flex;
       flex-direction: column;
       position: relative;
+      margin-left: 60px;
+      background: none;
     }
     .header-filter-container {
       display: flex;
@@ -228,160 +305,146 @@
   </style>
 </head>
 <body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+    <button class="back-btn" onclick="toggleSidebar()">← Close Dashboard</button>
 
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="profile-section">
-      <div class="profile-icon">
-        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M5.121 17.804A9 9 0 1118.88 17.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-        </svg>
-      </div>
-      
-      <a href="{{ route('profile.edit') }}" class="profile-link">MY PROFILE</a>
-      </div>
-    <!-- Navigation -->
-    <nav class="sidebar-nav">
-      <ul>
-        <li class="nav-item">
-          <a href="#" class="nav-link">
-            <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M3 7h18M3 12h18M3 17h18" />
-            </svg>
-            <span>DASHBOARD</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="#" class="nav-link">
-            <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M3 3h18v18H3V3z" />
-            </svg>
-            <span>PLASTIC ANALYSIS</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="#" class="nav-link">
-            <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7h14z" />
-            </svg>
-            <span>NON-PLASTIC ANALYSIS</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
-    <!-- Logout -->
-    <form method="POST" action="{{ route('logout') }}" class="logout-btn">
-    @csrf
-    <button type="submit" class="logout-btn" style="background: none; border: none; display: flex; align-items: center; color: inherit; cursor: pointer;">
-        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-6V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h6a2 2 0 002-2v-1" />
-        </svg>
-        <span>LOGOUT</span>
-    </button>
-</form>
+        <div class="profile-section">
+            <div class="profile-icon">
+                <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M5.121 17.804A9 9 0 1118.88 17.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </div>
+            <a href="{{ route('profile.edit') }}" class="profile-link">MY PROFILE</a>
+        </div>
 
-  </aside>
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span>DASHBOARD</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span>PLASTIC ANALYSIS</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span>NON-PLASTIC ANALYSIS</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <!-- Heading & Filter Section -->
-    <div class="header-filter-container">
-      <h1>PLASTIC ANALYSIS</h1>
-      <div class="filter-group">
-        <label class="filter-label">FILTER:</label>
-        <input type="text" placeholder="Filter..." class="filter-input" />
-      </div>
-    </div>
+        <!-- Logout -->
+        <form method="POST" action="{{ route('logout') }}" class="logout-btn">
+            @csrf
+            <button type="submit" class="logout-btn">
+                <span>LOGOUT</span>
+            </button>
+        </form>
+    </aside>
 
-    <!-- Dashboard Grid -->
-    <div class="dashboard-grid">
-      <!-- Calendar Section -->
-      <div class="calendar-container">
-        <h2 class="calendar-title" id="calendar-title">Calendar</h2>
-        <table class="calendar-table" id="calendar-table">
-          <!-- Calendar will be generated by JavaScript -->
-        </table>
-      </div>
-      <!-- Chart Section -->
-      <div class="chart-container">
-        <img src="https://via.placeholder.com/300x150?text=Chart+Placeholder" alt="Chart Placeholder" />
-      </div>
-    </div>
-  </main>
+    <!-- Hamburger Button -->
+    <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()">☰</button>
 
-  <!-- JavaScript to auto-generate the calendar and attach hover popups -->
-  <script>
-    function generateCalendar(year, month) {
-      const calendarTable = document.getElementById("calendar-table");
-      const calendarTitle = document.getElementById("calendar-title");
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="header-filter-container">
+            <h1>PLASTIC ANALYSIS</h1>
+        </div>
 
-      const monthNames = [
-        "January", "February", "March", "April", "May", "June", "July",
-        "August", "September", "October", "November", "December"
-      ];
-      calendarTitle.textContent = monthNames[month] + " " + year;
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Calendar Section -->
+            <div class="calendar-container">
+                <h2 class="calendar-title" id="calendar-title">Calendar</h2>
+                <table class="calendar-table" id="calendar-table"></table>
+            </div>
+            <!-- Chart Section -->
+            <div class="chart-container">
+                <img src="https://via.placeholder.com/300x150?text=Chart+Placeholder" alt="Chart Placeholder" />
+            </div>
+        </div>
+    </main>
 
-      // Clear existing table content
-      calendarTable.innerHTML = "";
+    <!-- JavaScript -->
+    <script>
+        function generateCalendar(year, month) {
+            const calendarTable = document.getElementById("calendar-table");
+            const calendarTitle = document.getElementById("calendar-title");
 
-      // Create header for days of week
-      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-      const thead = document.createElement("thead");
-      const headerRow = document.createElement("tr");
-      days.forEach(day => {
-        const th = document.createElement("th");
-        th.textContent = day;
-        headerRow.appendChild(th);
-      });
-      thead.appendChild(headerRow);
-      calendarTable.appendChild(thead);
+            const monthNames = [
+                "January", "February", "March", "April", "May", "June", "July",
+                "August", "September", "October", "November", "December"
+            ];
+            calendarTitle.textContent = monthNames[month] + " " + year;
 
-      // Create body for dates
-      const tbody = document.createElement("tbody");
-      const firstDay = new Date(year, month, 1).getDay();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-      let date = 1;
-      for (let i = 0; i < 6; i++) { // up to 6 rows
-        const row = document.createElement("tr");
-        for (let j = 0; j < 7; j++) {
-          const cell = document.createElement("td");
-          if (i === 0 && j < firstDay) {
-            cell.textContent = "";
-          } else if (date > daysInMonth) {
-            cell.textContent = "";
-          } else {
-            cell.textContent = date;
-            // Create a hidden chart popup inside each cell
-            const popup = document.createElement("div");
-            popup.className = "chart-popup";
-            // Use your own chart logic or replace the image source below
-            const img = document.createElement("img");
-            img.src = "https://via.placeholder.com/250x150?text=Plastic+Counts";
-            img.alt = "Plastic Counts Chart";
-            popup.appendChild(img);
-            cell.appendChild(popup);
-            date++;
-          }
-          row.appendChild(cell);
+            calendarTable.innerHTML = "";
+
+            // Create header for days of week
+            const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            const thead = document.createElement("thead");
+            const headerRow = document.createElement("tr");
+            days.forEach(day => {
+                const th = document.createElement("th");
+                th.textContent = day;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            calendarTable.appendChild(thead);
+
+            // Create body for dates
+            const tbody = document.createElement("tbody");
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            let date = 1;
+            for (let i = 0; i < 6; i++) {
+                const row = document.createElement("tr");
+                for (let j = 0; j < 7; j++) {
+                    const cell = document.createElement("td");
+                    if (i === 0 && j < firstDay) {
+                        cell.textContent = "";
+                    } else if (date > daysInMonth) {
+                        cell.textContent = "";
+                    } else {
+                        cell.textContent = date;
+
+                        // Chart Popup
+                        const popup = document.createElement("div");
+                        popup.className = "chart-popup";
+                        popup.innerHTML = `<img src="https://via.placeholder.com/250x150?text=Plastic+Counts" alt="Plastic Counts Chart">`;
+                        cell.appendChild(popup);
+                        date++;
+                    }
+                    row.appendChild(cell);
+                }
+                tbody.appendChild(row);
+                if (date > daysInMonth) break;
+            }
+            calendarTable.appendChild(tbody);
         }
-        tbody.appendChild(row);
-        if (date > daysInMonth) break;
-      }
-      calendarTable.appendChild(tbody);
-    }
 
-    const today = new Date();
-    generateCalendar(today.getFullYear(), today.getMonth());
-  </script>
+        const today = new Date();
+        generateCalendar(today.getFullYear(), today.getMonth());
+
+        function toggleSidebar() {
+            let sidebar = document.getElementById("sidebar");
+            let hamburger = document.getElementById("hamburger-btn");
+
+            sidebar.classList.toggle("active");
+
+            if (sidebar.classList.contains("active")) {
+                hamburger.style.display = "none";
+            } else {
+                hamburger.style.display = "block";
+            }
+        }
+    </script>
 </body>
+
 </html>

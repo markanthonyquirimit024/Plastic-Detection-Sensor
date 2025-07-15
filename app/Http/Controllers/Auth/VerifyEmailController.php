@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -10,18 +9,26 @@ use Illuminate\Http\RedirectResponse;
 class VerifyEmailController extends Controller
 {
     /**
-     * Mark the authenticated user's email address as verified.
+     * Handle the email verification process and show a message.
+     *
+     * @param  \Illuminate\Foundation\Auth\EmailVerificationRequest  $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function __invoke(EmailVerificationRequest $request): RedirectResponse
     {
+        // Check if the email is already verified
         if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
+            // If the email is already verified, redirect to login with a message
+            return redirect()->route('login')->with('message', 'Your email has already been verified. Please log in.');
         }
 
-        if ($request->user()->markEmailAsVerified()) {
-            event(new Verified($request->user()));
-        }
+        // Mark the email as verified
+        $request->user()->markEmailAsVerified();
 
-        return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
+        // Fire the Verified event
+        event(new Verified($request->user()));
+
+        // Redirect to login with a success message
+        return redirect()->route('login')->with('message', 'Your email has been successfully verified! Please log in.');
     }
 }
