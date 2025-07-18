@@ -161,6 +161,19 @@
 <body>
 
 <div class="auth-container">
+
+    <!-- Logout Icon -->
+    <div style="margin-left: 330px;">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit"
+                onclick="event.preventDefault(); if(confirm('Are you sure you want to log out?')) { this.form.submit(); }">
+                <img src="{{ asset('images/logout-icon.jpg') }}" alt="Logout" width="40">
+            </button>
+        </form>
+    </div>
+
+
     <!-- Circular Logo -->
     <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
 

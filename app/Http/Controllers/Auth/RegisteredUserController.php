@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password;
 use App\Models\User;
 
 class RegisteredUserController extends Controller
@@ -26,7 +27,14 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => [
+            'required',
+            'confirmed',
+            Password::min(8)
+                ->mixedCase()
+                ->letters()
+                ->numbers()
+            ],
         ]);
 
         // ✅ Create user but do NOT log in yet
