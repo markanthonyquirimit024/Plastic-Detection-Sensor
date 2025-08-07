@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\SubAdminController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -11,6 +12,7 @@ use App\Http\Middleware\TwoFactorMiddleware;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -97,6 +99,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // User Management
+    Route::get('/admin/user-management', [SubAdminController::class, 'index'])->name('admin.user-management');
+    Route::get('/admin/user-management/create-user', [SubAdminController::class, 'createUserView'])->name('admin.create-user');
+
 });
 
 /*
