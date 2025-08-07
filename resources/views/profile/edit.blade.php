@@ -1,158 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
-    <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
+@include('layout.base')
+<title>Profile</title>
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap">
-    <style>
-        /* General Styling */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            display: flex;
-            background: radial-gradient(circle, rgba(114, 114, 114, 1) 0%, rgba(9, 121, 54, 1) 92%, rgba(9, 121, 54, 1) 100%);
-            min-height: 100vh;
-            transition: margin-left 0.3s ease;
-        }
-        body::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-       
-        z-index: -1;
-      }
-
-
-        /* Sidebar */
-        .sidebar {
-            width: 270px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-            position: fixed;
-            left: -270px; /* Initially hidden */
-            top: 0;
-            height: 100%;
-            transition: left 0.4s ease-in-out;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            border-radius: 0 20px 20px 0;
-            z-index: 1000;
-        }
-
-        .sidebar.active {
-            left: 0;
-        }
-
-        /* Back Button */
-        .back-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 10px;
-            border: none;
-            font-size: 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s ease, transform 0.3s;
-            width: 100%;
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05);
-        }
-
-        .profile-section {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .profile-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #c8a2c8;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 8px;
-        }
-
-        .profile-name {
-            font-weight: bold;
-            font-size: 1rem;
-            color: white;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: white;
-            font-size: 0.9rem;
-            padding: 12px;
-            border-radius: 10px;
-            transition: background 0.3s, transform 0.3s ease;
-        }
-
-        .nav-link:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
-        }
-
-        /* Logout Button */
-        .logout-btn {
-            color: white;
-            text-decoration: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            background: rgba(255, 0, 0, 0.6);
-            border: none;
-            cursor: pointer;
-            transition: background 0.3s ease, transform 0.3s;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255, 0, 0, 0.8);
-            transform: scale(1.05);
-        }
-
-        /* Hamburger Button */
-        .hamburger {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: #333;
-            color: white;
-            padding: 12px;
-            border: none;
-            font-size: 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s ease, transform 0.3s;
-            z-index: 1001;
-        }
-
-        .hamburger:hover {
-            background: #555;
-            transform: scale(1.05);
-        }
+<style>
 
         /* Main Content */
          /* Main Content */
@@ -163,10 +12,6 @@
             margin-left: 0;
             transition: margin-left 0.3s ease;
             width: 100%;
-        }
-
-        .sidebar.active ~ .main-content {
-            margin-left: 250px;
         }
 
         .welcome-message {
@@ -286,30 +131,6 @@
 </head>
 <body>
 
-    <!-- Hamburger Button -->
-    <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()">☰</button>
-
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <button class="back-btn" onclick="toggleSidebar()">← Close Dashboard</button>
-
-        <div class="profile-section">
-            <div class="profile-icon">👤</div>
-            <a href="{{ route('profile.edit') }}" class="profile-name">MY PROFILE</a>
-        </div>
-
-        <nav>
-            <ul>
-                <li><a href="{{ route('dashboard') }}" class="nav-link">DASHBOARD</a></li>
-            </ul>
-        </nav>
-
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="logout-btn">LOGOUT</button>
-        </form>
-    </aside>
-
     <!-- Main Content -->
     <main class="main-content">
         <div class="welcome-message">Welcome to Your Profile, {{ Auth::user()->name }}!</div>
@@ -375,22 +196,5 @@
     </div>
         </div>
     </main>
-    <script>
-        function toggleSidebar() {
-            let sidebar = document.getElementById("sidebar");
-            let hamburger = document.getElementById("hamburger-btn");
-
-            if (sidebar.classList.contains("active")) {
-                sidebar.classList.remove("active");
-                setTimeout(() => {
-                    hamburger.style.display = "block"; // Show hamburger button
-                }, 300);
-            } else {
-                sidebar.classList.add("active");
-                hamburger.style.display = "none"; // Hide hamburger button
-            }
-        }
-    </script>
 
 </body>
-</html>
