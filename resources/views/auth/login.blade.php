@@ -119,32 +119,6 @@
         box-shadow: 0px 6px 15px rgba(27, 131, 23, 0.5);
       }
 
-      /* Error messages */
-      .error-message {
-        color: red;
-        font-size: 14px;
-        margin-bottom: 10px;
-        background: rgba(255, 0, 0, 0.2);
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid red;
-        text-align: center;
-        width: 90%;
-      }
-
-      /* Success messages */
-      .success-message {
-        color: green;
-        font-size: 14px;
-        margin-bottom: 10px;
-        background: rgba(0, 255, 0, 0.2);
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid green;
-        margin-left: 9px;
-        width: 90%;
-      }
-
       /* Links */
       .links {
         margin-top: 15px;
@@ -178,22 +152,14 @@
     <!-- Circular Logo -->
     <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
     <h2 style="color: white;">LOGIN</h2>
-    
 
-    @if (session('success'))
-    <div class="success-message">
-        {{ session('success') }}
-    </div>
-@endif
+    <!--Success Message-->
+    <x-success-message/>
 
-    @if (session('message'))
-      <p class="success-message">{{ session('message') }}</p>
-    @endif
+    <!-- Error Validation -->
+    <x-validation-errors/>
 
-    @if ($errors->any())
-      <p class="error-message">{{ $errors->first() }}</p>
-    @endif
-
+    <p style="color: white;">Enter your credentials</p>
     <form id="login-form" method="POST" action="{{ route('login') }}">
       @csrf
       <input type="email" id="email" name="email" class="input-field" placeholder="Email" required autofocus>
@@ -211,14 +177,6 @@
       font-size: 18px;
     ">👁️</button>
   </div>
-
-
-      <p class="password-instruction">Password must be at least 8 characters long</p>
-      <p id="password-error" class="error-message" style="display:none;">
-        - Uppercase & lowercase letters<br>
-        - At least one number<br>
-        - At least one special symbol (@$!%*?&) 
-      </p>
 
       <button type="submit" class="login-btn">LOGIN</button>
     </form>
