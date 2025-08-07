@@ -18,7 +18,7 @@
         body {
             font-family: 'Poppins', sans-serif;
             display: flex;
-            background: url("../images/coverwel2.png") no-repeat center center/cover;
+            background: radial-gradient(circle, rgba(114, 114, 114, 1) 0%, rgba(9, 121, 54, 1) 92%, rgba(9, 121, 54, 1) 100%);
             min-height: 100vh;
             transition: margin-left 0.3s ease;
         }
@@ -29,7 +29,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(32, 32, 32, 0.5);
+       
         z-index: -1;
       }
 

@@ -10,7 +10,9 @@
     <style>
         /* General styling */
         body {
-            background: url("{{ asset('images/coverwel2.png') }}") no-repeat center center/cover;
+            background: #ffffff;
+            background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(9, 121, 54, 1) 92%, rgba(9, 121, 54, 1) 100%);
+            background-position: center;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -28,7 +30,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(32, 32, 32, 0.5);
+            background: rgba(107, 107, 107, 0.5);
             z-index: -1;
         }
 
@@ -154,7 +156,6 @@
 
 <div class="container">
     <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
-    <h2 style="color: white;">Captcha Verification</h2>
     
     @if(session('error'))
         <p class="error">{{ session('error') }}</p>

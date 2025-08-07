@@ -9,9 +9,8 @@
     <style>
       /* General styling */
    body {
-  background: url("images/logo.png") no-repeat center center;
-  background-size: 1000px 700px; /* Adjust width and height of logo */
-  background-repeat: no-repeat;
+  background: #ffffff;
+  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(9, 121, 54, 1) 92%, rgba(9, 121, 54, 1) 100%);
   background-position: center;
   
   display: flex;
@@ -23,7 +22,15 @@
   position: relative;
 }
 
-      
+      .logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
+        }
+
 
       /* Background overlay */
       body::before {
@@ -33,7 +40,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(32, 32, 32, 0.5);
+        background: rgba(107, 107, 107, 0.5);
         z-index: -1;
       }
 
@@ -169,7 +176,7 @@
 
   <div class="login-container">
     <!-- Circular Logo -->
-
+    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
     <h2 style="color: white;">LOGIN</h2>
     
 
