@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use Illuminate\Validation\Rules\Password;
-
 
 class SubAdminController extends Controller
 {
@@ -20,6 +19,7 @@ class SubAdminController extends Controller
         $analysts = User::orderBy('id','asc')->paginate(10);
         return view('profile.Admin.user-management', compact('user','analysts'));
     }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -90,5 +90,5 @@ class SubAdminController extends Controller
         $analystaccount = User::find($id);
         $analystaccount->delete();
         return redirect()->route('admin.user-management')->with('success', 'Analyst deleted successfully.');
-    }
+
 }

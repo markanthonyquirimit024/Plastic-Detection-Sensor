@@ -12,7 +12,6 @@
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
      
 
-
     <link rel="stylesheet" href="{{ asset('assets/base.css') }}">
     <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
 </head>
@@ -29,7 +28,7 @@
             </div>
             <a href="{{ route('profile.edit') }}" class="profile-link">{{ ucfirst(Str::before(Auth::user()->name, ' ')) }}</a>
         </div>
-        
+  
         <!-- Navigation -->
         <nav class="sidebar-nav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
