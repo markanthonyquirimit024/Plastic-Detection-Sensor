@@ -102,8 +102,8 @@ Route::middleware('auth')->group(function () {
 
     // User Management
     Route::get('/admin/user-management', [SubAdminController::class, 'index'])->name('admin.user-management');
-    Route::get('/admin/user-management/create-user', [SubAdminController::class, 'createUserView'])->name('admin.create-user');
-
+    Route::post('/admin/user-management/create-analyst', [SubAdminController::class, 'store'])->name('admin.create-analyst');
+    Route::delete('/admin/user-management/{id}', [SubAdminController::class, 'destroy'])->name('admin.delete-user');
 });
 
 /*

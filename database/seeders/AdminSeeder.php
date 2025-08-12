@@ -14,7 +14,8 @@ class AdminSeeder extends Seeder
 
         if (!$adminExists) {
             User::create([
-                'name' => 'Admin', 
+                'first_name' => 'Admin', 
+                'last_name' => 'Admin',
                 'email' => 'admin@phinmaed.com',
                 'password' => bcrypt('admin'),
                 'utype' => 'ADM',

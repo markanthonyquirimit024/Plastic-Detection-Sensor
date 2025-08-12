@@ -5,20 +5,29 @@
 
 <body>
 
-  <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()">☰</button>
-
   <main class="main-content" id="main">
     <div class="header-filter-container">
       <h1>PLASTIC & NON-PLASTIC ANALYSIS</h1>
     </div>
 
     <div class="count-container">
-      <div class="count-card">
-        <div class="count-title">Plastic Detected</div>
+      @auth
+        @if(Auth::user()->utype === 'ADM')
+      <div class="count-card" id="usercount"><div>
+        <div class="count-title">Total Users</div>
+        </div>
         <div class="count-value">{{ $plasticCount ?? 124 }}</div>
       </div>
+        @endif
+      @endauth
       <div class="count-card">
-        <div class="count-title">Non-Plastic Detected</div>
+        <div class="count-title">Plastic Detected</div>
+        <div class="count-title">Entrance 1</div>
+        <div class="count-value">{{ $plasticCount ?? 124 }}</div>
+    </div>
+      <div class="count-card">
+        <div class="count-title">Plastic Detected</div>
+        <div class="count-title">Entrance 2</div>
         <div class="count-value">{{ $nonPlasticCount ?? 86 }}</div>
       </div>
     </div>

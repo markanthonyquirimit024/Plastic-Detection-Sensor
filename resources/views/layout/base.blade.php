@@ -9,6 +9,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+     
+
 
     <link rel="stylesheet" href="{{ asset('assets/base.css') }}">
     <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
@@ -16,8 +19,7 @@
 <body>
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
-    <button class="back-btn" onclick="toggleSidebar()">☰</button>
-
+        <button class="back-btn" onclick="toggleSidebar()">← Close</button>
         <div class="profile-section">
             <div class="profile-icon">
                 <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -25,7 +27,7 @@
                         d="M5.121 17.804A9 9 0 1118.88 17.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
             </div>
-            <a href="{{ route('profile.edit') }}" class="profile-link">MY PROFILE</a>
+            <a href="{{ route('profile.edit') }}" class="profile-link">{{ ucfirst(Str::before(Auth::user()->name, ' ')) }}</a>
         </div>
         
         <!-- Navigation -->
@@ -85,6 +87,7 @@
         function toggleSidebar() {
             let sidebar = document.getElementById("sidebar");
             let hamburger = document.getElementById("hamburger-btn");
+            let back_btn = document.getElementsByClassName("back-btn");
 
             sidebar.classList.toggle("active");
 
