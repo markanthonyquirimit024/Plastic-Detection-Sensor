@@ -100,7 +100,6 @@ class SubAdminController extends Controller
     $analyst->last_name  = $validated['last_name'];
     $analyst->email      = $validated['email'];
 
-    // Only update password if new one is provided
     if (!empty($validated['password'])) {
         $analyst->password = Hash::make($validated['password']);
     }
