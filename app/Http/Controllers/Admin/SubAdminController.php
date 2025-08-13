@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Analyst;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Hash;
 
 class SubAdminController extends Controller
 {
@@ -63,24 +65,59 @@ class SubAdminController extends Controller
      */
     public function show(string $id)
     {
-        //
+
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function update (Request $request, string $id)
     {
-        //
+    $analyst = User::findOrFail($id);
+
+    $rules = [
+        'first_name' => 'required|string|max:255',
+        'last_name'  => 'required|string|max:255',
+        'email'      => 'required|string|email|max:255|unique:users,email,' . $analyst->id,
+    ];
+
+    // Only add password validation if filled
+    if ($request->filled('password')) {
+        $rules['password'] = [
+            'nullable',
+            'confirmed',
+            Password::min(8)
+                ->mixedCase()
+                ->letters()
+                ->numbers()
+                ->symbols(),
+        ];
     }
+
+    $validated = $request->validate($rules);
+
+    $analyst->first_name = $validated['first_name'];
+    $analyst->last_name  = $validated['last_name'];
+    $analyst->email      = $validated['email'];
+
+    // Only update password if new one is provided
+    if (!empty($validated['password'])) {
+        $analyst->password = Hash::make($validated['password']);
+    }
+
+    $analyst->save();
+
+    return redirect()->back()->with('success', 'User updated successfully!');
+    }
+
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+    // public function update(Request $request, string $id)
+    // {
+    //     //
+    // }
 
     /**
      * Remove the specified resource from storage.
@@ -91,4 +128,5 @@ class SubAdminController extends Controller
         $analystaccount->delete();
         return redirect()->route('admin.user-management')->with('success', 'Analyst deleted successfully.');
 
+}
 }

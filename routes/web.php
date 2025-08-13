@@ -86,7 +86,18 @@ Route::middleware(['auth'])->group(function () {
 */
 Route::middleware(['auth', TwoFactorMiddleware::class])->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        $stats = [
+        'visitors' => 15230,
+        'pageViews' => 40213,
+        'bounceRate' => 47.3,
+        'sessionDuration' => '3m 25s'
+    ];
+
+    $chartData = [
+        'labels' => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        'values' => [1200, 1500, 1700, 1300, 1900, 2300, 2000]
+    ];
+    return view('dashboard', compact('stats', 'chartData'));
     })->name('dashboard');
 });
 
@@ -103,6 +114,7 @@ Route::middleware('auth')->group(function () {
     // User Management
     Route::get('/admin/user-management', [SubAdminController::class, 'index'])->name('admin.user-management');
     Route::post('/admin/user-management/create-analyst', [SubAdminController::class, 'store'])->name('admin.create-analyst');
+    Route::put('/admin/user-management/{id}', [SubAdminController::class, 'update'])->name('admin.edit-user');
     Route::delete('/admin/user-management/{id}', [SubAdminController::class, 'destroy'])->name('admin.delete-user');
 });
 
