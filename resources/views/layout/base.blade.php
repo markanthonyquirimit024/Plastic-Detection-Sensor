@@ -33,18 +33,18 @@
         <nav class="sidebar-nav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a href="{{route('dashboard')}}" class="nav-link">
-                        <span>DASHBOARD</span>
+                    <a href="{{ route('dashboard') }}" class="nav-link">
+                        <span>📊 DASHBOARD</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span>REPORTS</span>
+                    <a href="{{ route('reports') }}" class="nav-link">
+                        <span>📈 REPORTS</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span>DATA EXPLORER</span>
+                    <a href="{{ route('data-explorer') }}" class="nav-link">
+                        <span>🧪 DATA EXPLORER</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -54,7 +54,7 @@
                 role="button"
                 aria-expanded="false"
                 aria-controls="accountMenu">
-                    <span>ACCOUNT SETTINGS</span>
+                    <span>⚙️ ACCOUNT SETTINGS</span>
                     <i class="bi bi-chevron-down"></i>
                 </a>
                 <div class="collapse hide" id="accountMenu">
@@ -62,19 +62,23 @@
                         <li class="nav-item">
                             <a class="nav-link account-settings-link text-light" href="{{route('profile.edit')}}">Profile</a>
                         </li>
+                        @auth
+                        @if(Auth::user()->utype === 'ADM')
                         <li class="nav-item">
                             <a class="nav-link account-settings-link text-light" href="{{route('admin.user-management')}}">User Management</a>
                         </li>
+                        @endif
+                        @endauth
                     </ul>
                 </div>
             </li>
             </ul>
         </nav>
 
-        <form method="POST" action="{{ route('logout') }}">
+        <form method="POST" id="logout-form" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="logout-btn">
-                LOGOUT
+            <button type="submit" class="logout-btn" onclick="event.preventDefault(); if(confirm('Are you sure you want to log out?')) {document.getElementById('logout-form').submit();}">
+                🔓 LOGOUT
             </button>
         </form>
 

@@ -12,7 +12,8 @@ use App\Http\Middleware\TwoFactorMiddleware;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-
+use App\Http\Controllers\DataExplorerController;
+use App\Http\Controllers\ReportsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -116,6 +117,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/user-management/create-analyst', [SubAdminController::class, 'store'])->name('admin.create-analyst');
     Route::put('/admin/user-management/{id}', [SubAdminController::class, 'update'])->name('admin.edit-user');
     Route::delete('/admin/user-management/{id}', [SubAdminController::class, 'destroy'])->name('admin.delete-user');
+
+
+    Route::get('/data-explorer', [DataExplorerController::class, 'index'])->name('data-explorer');
+    Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
+
 });
 
 /*
