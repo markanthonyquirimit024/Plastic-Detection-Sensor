@@ -15,12 +15,32 @@ class SubAdminController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
-        $analysts = User::orderBy('id','asc')->paginate(10);
+        $search = $request->input('search');
+
+        // Query users
+        $analysts = User::when($search, function ($query, $search) {
+            $query->where('first_name', 'LIKE', "%{$search}%")
+            ->orWhere('last_name', 'LIKE', "%{$search}%")
+            ->orWhere('email', 'LIKE', "%{$search}%")
+            ->orWhere('id', 'LIKE', "%{$search}%");
+        })
+        ->orderBy('id', 'asc')
+        ->paginate(10);
+
+        $analysts->appends(['search' => $search]);
         return view('profile.Admin.user-management', compact('user','analysts'));
+
+
     }
+
+public function searchUser()
+    {
+
+    }   
+
 
     /**
      * Show the form for creating a new resource.

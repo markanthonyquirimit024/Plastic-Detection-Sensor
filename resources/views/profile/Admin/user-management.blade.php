@@ -10,9 +10,15 @@
         <a class="btn btn-gradient px-4 py-2 rounded-pill" data-bs-toggle="modal" data-bs-target="#popupForm">
           + Create Analyst
         </a>
+        <form method="GET" action="{{ route('admin.user-management') }}" class="mb-3 d-flex">
+        <input type="text" name="search" class="form-control me-2" 
+              placeholder="Search users..." value="{{ request('search') }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+        </form>
       </div>
 
       <div class="table-responsive">
+        @if($analysts->count() > 0)
         <table class="table table-hover align-middle">
           <thead class="table-gradient text-white">
             <tr>
@@ -107,6 +113,12 @@
             @endforeach
           </tbody>
         </table>
+            {{ $analysts->appends(['search' => request('search')])->links() }}
+      @else
+      <div class="alert alert-warning text-center">
+        No results found for "<strong>{{ request('search') }}</strong>"
+    </div>
+    @endif
       </div>
     </div>
   </div>
