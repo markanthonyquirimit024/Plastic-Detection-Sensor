@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
      
 
     <link rel="stylesheet" href="{{ asset('assets/base.css') }}">

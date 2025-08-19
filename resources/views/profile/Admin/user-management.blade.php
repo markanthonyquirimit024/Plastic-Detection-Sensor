@@ -104,7 +104,7 @@
                     @csrf
                     @method('DELETE')
                     <button class="btn btn-outline-danger btn-sm"
-                      onclick="return confirm('Delete this account?')">
+                      onclick="return confirm('Are you sure want to delete this account?')">
                       <i class="fa fa-trash me-1"></i>Delete
                     </button>
                   </form>
