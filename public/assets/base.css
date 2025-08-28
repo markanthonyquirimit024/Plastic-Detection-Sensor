@@ -21,6 +21,15 @@
       display: flex;
       flex-direction: column;
     }
+
+    .account-settings-toggle i {
+  transition: transform 0.3s ease;
+}
+
+.account-settings-toggle[aria-expanded="true"] i {
+  transform: rotate(180deg);
+}
+
     .sidebar.active { left: 0; }
     .hamburger {
       position: fixed;
@@ -60,10 +69,19 @@
       display: flex; align-items: center; justify-content: center;
       margin-right: 10px;
     }
-    .profile-link, .nav-link, .logout-btn {
+
+      .nav-link, .logout-btn {
       color: white;
       text-decoration: none;
     }
+
+    .profile-link
+    {
+      color: white;
+      font-size: 24px;
+      text-decoration:none;
+    }
+
     .nav-link {
       display: block;
       padding: 12px;

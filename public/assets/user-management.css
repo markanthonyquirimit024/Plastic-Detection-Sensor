@@ -1,0 +1,125 @@
+#usertable {
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  margin-top: 150px;
+}
+
+h1 {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.table {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.table thead {
+  background: linear-gradient(90deg, #2193b0, #6dd5ed);
+  color: white;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(33, 147, 176, 0.1);
+  transition: 0.2s;
+}
+
+.btn-gradient {
+  background: linear-gradient(90deg, #4facfe, #00f2fe);
+  color: white !important;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.btn-gradient:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #2193b0, #6dd5ed);
+  border: none;
+  font-weight: bold;
+  padding: 10px 18px;
+  border-radius: 8px;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(90deg, #1a82a2, #5cc8db);
+}
+
+.btn-info {
+  background: linear-gradient(90deg, #36d1dc, #5b86e5);
+  border: none;
+}
+
+.btn-danger {
+  background: linear-gradient(90deg, #ff4b2b, #ff416c);
+  border: none;
+}
+
+.btn-info:hover,
+.btn-danger:hover {
+  opacity: 0.9;
+}
+
+.modal-content {
+  border-radius: 15px;
+  border: none;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.toast {
+  border-radius: 10px;
+}
+
+.password-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+  .password-wrapper input {
+    padding-right: 40px;
+  }
+  .password-wrapper .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+
+
+
+  .edit-modal {
+  backdrop-filter: blur(12px);
+  border-radius: 15px;
+  border: none;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+.edit-modal .modal-header {
+  background: linear-gradient(90deg, #36d1dc, #5b86e5);
+  color: white;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+.edit-modal .modal-title {
+  font-weight: bold;
+}
+
+.edit-modal .btn-primary {
+  background: linear-gradient(90deg, #36d1dc, #5b86e5);
+  border: none;
+}
+
+.edit-modal .btn-primary:hover {
+  opacity: 0.9;
+}
