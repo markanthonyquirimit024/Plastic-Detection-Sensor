@@ -15,6 +15,8 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\DataExplorerController;
 use App\Http\Controllers\ReportsController;
 use Kreait\Firebase\Factory;
+use App\Http\Controllers\FirebaseController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -123,6 +125,9 @@ Route::middleware(['auth:sanctum', 'verified', 'authadmin'])->group(function () 
     Route::put('/admin/user-management/{id}', [SubAdminController::class, 'update'])->name('admin.edit-user');
     Route::delete('/admin/user-management/{id}', [SubAdminController::class, 'destroy'])->name('admin.delete-user');
     });
+
+Route::get('/firebase/write', [FirebaseController::class, 'write']);
+Route::get('/firebase/read', [FirebaseController::class, 'read']);
 
 Route::middleware(['auth:sanctum','verified', 'authanalyst'])->group(function () {
 
