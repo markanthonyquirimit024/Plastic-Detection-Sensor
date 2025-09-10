@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Analyst;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -56,24 +56,26 @@ public function searchUser()
     public function store(Request $request)
 {
     $request->validate([
-        'first_name' =>'required','string','max:255',
-        'last_name' =>'required','string','max:255',
-        'email' => 'required|string|email|max:255|unique:users',
-        'password' => [
+        'first_name' => ['required', 'string', 'max:255'],
+        'last_name'  => ['required', 'string', 'max:255'],
+        'email'      => ['required', 'string', 'email', 'max:255', 'unique:users'],
+        'password'   => [
             'required',
             'confirmed',
             Password::min(8)
                 ->mixedCase()
                 ->letters()
                 ->numbers()
-        ]
+        ],
     ]);
 
     $user = User::create([
-        'first_name' => $request->first_name,
-        'email' => $request->email,
-        'last_name' => $request->last_name,
-        'password' => bcrypt($request->password),
+        'first_name'        => $request->first_name,
+        'last_name'         => $request->last_name,
+        'email'             => $request->email,
+        'password'          => Hash::make($request->password),
+        'email_verified_at' => now(),
+        'utype'             => 'ANAL',
     ]);
 
     return back()->with('success', 'User created successfully.');

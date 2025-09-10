@@ -3,8 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class AdminSeeder extends Seeder
 {
@@ -17,8 +18,9 @@ class AdminSeeder extends Seeder
                 'first_name' => 'Admin', 
                 'last_name' => 'Admin',
                 'email' => 'admin@phinmaed.com',
-                'password' => bcrypt('admin'),
+                'password' => Hash::make('admin'),
                 'utype' => 'ADM',
+                'email_verified_at' => Carbon::now(),
             ]);
         }
 }

@@ -14,6 +14,9 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\DataExplorerController;
 use App\Http\Controllers\ReportsController;
+use Kreait\Firebase\Factory;
+use App\Http\Controllers\FirebaseController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -111,16 +114,22 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/data-explorer', [DataExplorerController::class, 'index'])->name('data-explorer');
+    Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
+});
 
+Route::middleware(['auth:sanctum', 'verified', 'authadmin'])->group(function () {
     // User Management
     Route::get('/admin/user-management', [SubAdminController::class, 'index'])->name('admin.user-management');
     Route::post('/admin/user-management/create-analyst', [SubAdminController::class, 'store'])->name('admin.create-analyst');
     Route::put('/admin/user-management/{id}', [SubAdminController::class, 'update'])->name('admin.edit-user');
     Route::delete('/admin/user-management/{id}', [SubAdminController::class, 'destroy'])->name('admin.delete-user');
+    });
 
+Route::get('/firebase/write', [FirebaseController::class, 'write']);
+Route::get('/firebase/read', [FirebaseController::class, 'read']);
 
-    Route::get('/data-explorer', [DataExplorerController::class, 'index'])->name('data-explorer');
-    Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
+Route::middleware(['auth:sanctum','verified', 'authanalyst'])->group(function () {
 
 });
 
