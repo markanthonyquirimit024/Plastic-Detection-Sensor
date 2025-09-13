@@ -1,7 +1,7 @@
 /* General Page */
 body {
   font-family: 'Poppins', sans-serif;
-background-color: #ffffff !important;
+  background: #f8f9fa; /* same as dashboard */
   color: #212529;
   min-height: 100vh;
   overflow-x: hidden;
@@ -12,6 +12,7 @@ background-color: #ffffff !important;
 .data-explorer-wrapper {
   width: 100%;
   min-height: 100vh;
+  background: #f8f9fa;
   display: flex;
   flex-direction: column;
   padding: 2rem;
@@ -24,9 +25,8 @@ header {
 }
 header h1 {
   font-weight: 700;
-    font-size: 2rem;
-    letter-spacing: 1px;
-    color:  black;
+  font-size: 2rem;
+  color: black;
 }
 header p {
   font-size: 1rem;
@@ -48,6 +48,7 @@ header hr {
   border: none;
 }
 .card:hover {
+  transform: translateY(-3px);
   box-shadow: 0 10px 24px rgba(0,0,0,0.12);
 }
 .card-title {

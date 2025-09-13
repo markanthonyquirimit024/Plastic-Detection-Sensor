@@ -1,113 +1,121 @@
+/* public/assets/report.css */
+
 /* General Page */
 body {
   font-family: 'Poppins', sans-serif;
-  background: #ffffff;
-  color: #212529;
-  margin: 0;
-  overflow: hidden;
-  height: 100vh;
-  display: flex;
-}
-
-/* Wrapper fits next to sidebar */
-.report-wrapper {
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  background: radial-gradient(circle, rgba(114, 114, 114, 1) 0%, rgba(9, 121, 54, 1) 92%);
+  color: white;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* Header */
 header {
-  margin-bottom: 0.8rem;
+  text-align: center;
+  margin-bottom: 2rem;
 }
 header h1 {
   font-weight: 700;
-    font-size: 2rem;
-    letter-spacing: 1px;
-    color:  black;
+  font-size: 2rem;
 }
 header hr {
-  width: 60px;
-  border: 2px solid #d1e7dd;
-  margin: 6px 0;
+  width: 80px;
+  border: 2px solid rgba(255,255,255,0.3);
+  margin: 10px auto;
   border-radius: 2px;
 }
 
-/* Compact Cards */
+/* Card style (Summary + Table wrapper) */
 .card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
-  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.compact-card .card-body {
-  padding: 0.8rem;
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.35);
 }
 .card-title {
-  font-size: 1rem;
-  margin-bottom: 0.3rem;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: white;
 }
 .stat-number {
-  font-size: 1.4rem;
+  font-size: 2rem;
   font-weight: 700;
-  margin: 0;
-  color: #198754;
+}
+.text-highlight {
+  color: #4fd1c5;
 }
 
-/* Chart */
-.chart-wrapper {
-  position: relative;
-  height: 180px;
-  width: 100%;
-}
-.chart-wrapper canvas {
-  width: 100% !important;
-  height: 100% !important;
+/* Chart Container */
+.chart-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  padding: 1.5rem;
 }
 
 /* Table */
-.table-container {
-  height: 100%;
-  overflow-y: auto;
-}
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
+  margin-top: 1rem;
+  background-color: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  overflow: hidden;
 }
 thead {
-  background: #d1e7dd;
-  color: #198754;
+  background-color: rgba(255,255,255,0.15);
 }
 th, td {
-  padding: 6px 10px;
-  border-bottom: 1px solid #dee2e6;
+  padding: 12px 16px;
+  text-align: left;
+}
+tbody tr:nth-child(even) {
+  background: rgba(255,255,255,0.08);
 }
 tbody tr:hover {
-  background: #f8f9fa;
+  background: rgba(255,255,255,0.2);
 }
 
 /* Buttons */
-button, .btn {
-  padding: 0.4rem 0.8rem;
-  font-size: 0.8rem;
-  border-radius: 6px;
-  border: none;
+a, button {
+  display: inline-block;
+  cursor: pointer;
+  font-size: 0.9rem;
   font-weight: 600;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
 }
-.btn-green { background: #198754; color: white; }
-.btn-red { background: #dc3545; color: white; }
-.btn-green:hover { background: #146c43; }
-.btn-red:hover { background: #b02a37; }
+a.bg-red-500 { background-color: #e63946; color: white; }
+a.bg-red-500:hover { background-color: #d62839; }
+a.bg-green-500 { background-color: #2a9d8f; color: white; }
+a.bg-green-500:hover { background-color: #21867a; }
+a.bg-blue-500 { background-color: #457b9d; color: white; }
+a.bg-blue-500:hover { background-color: #35607a; }
 
-/* Status Labels */
+/* Chart canvas */
+canvas {
+  max-width: 100%;
+}
+
+/* Status labels */
 .status-pill {
-  padding: 2px 8px;
+  padding: 4px 10px;
   border-radius: 8px;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 600;
 }
-.status-success { background: #d1e7dd; color: #198754; }
-.status-failed { background: #f8d7da; color: #dc3545; }
+.status-completed {
+  background-color: rgba(72, 187, 120, 0.3);
+  color: #38a169;
+}
+.status-pending {
+  background-color: rgba(237, 137, 54, 0.3);
+  color: #dd6b20;
+}
