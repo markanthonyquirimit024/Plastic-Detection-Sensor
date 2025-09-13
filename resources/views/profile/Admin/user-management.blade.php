@@ -4,19 +4,33 @@
 
 <div class="main-content py-5" id="main-content">
   <div class="container">
+
+    <!-- Page Header -->
+    <div class="page-header text-center mb-5">
+      <h1 class="fw-bold ">👥 User Management</h1>
+      <p class="text-muted fs-5">Manage all analysts in the system — create, edit, or remove accounts with ease.</p>
+    </div>
+
+    <!-- User Table Card -->
     <div class="card shadow-lg border-0 rounded-4 p-4" id="usertable">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="fw-bold text-primary mb-0">Manage Analysts</h1>
-        <a class="btn btn-gradient px-4 py-2 rounded-pill" data-bs-toggle="modal" data-bs-target="#popupForm">
-          + Create Analyst
-        </a>
-        <form method="GET" action="{{ route('admin.user-management') }}" class="mb-3 d-flex">
-        <input type="text" name="search" class="form-control me-2" 
-              placeholder="Search users..." value="{{ request('search') }}">
-        <button type="submit" class="btn btn-primary">Search</button>
-        </form>
+      
+      <!-- Actions -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-dark mb-3 mb-md-0">Analysts List</h4>
+        
+        <div class="d-flex flex-column flex-md-row align-items-center gap-2">
+          <a class="btn btn-gradient px-4 py-2 rounded-pill" data-bs-toggle="modal" data-bs-target="#popupForm">
+            + Create Analyst
+          </a>
+          <form method="GET" action="{{ route('admin.user-management') }}" class="d-flex">
+            <input type="text" name="search" class="form-control me-2" 
+                  placeholder="Search users..." value="{{ request('search') }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+        </div>
       </div>
 
+      <!-- Table -->
       <div class="table-responsive">
         @if($analysts->count() > 0)
         <table class="table table-hover align-middle">
@@ -37,8 +51,12 @@
                 <td>{{ $analyst->last_name }}</td>
                 <td>{{ $analyst->email }}</td>
                 <td>
-                  <button class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#editUserModal{{ $analyst->id }}"><i class="fa fa-edit me-1"></i>Edit</button>
+                  <!-- Edit Button -->
+                  <button class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#editUserModal{{ $analyst->id }}">
+                    <i class="fa fa-edit me-1"></i>Edit
+                  </button>
 
+                  <!-- Edit Modal -->
                   <div class="modal fade" id="editUserModal{{ $analyst->id }}" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                       <div class="modal-content edit-modal bg-secondary">
@@ -46,7 +64,6 @@
                           <h5 class="modal-title"><i class="fas fa-user-edit"></i> Edit Analyst</h5>
                           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
-
                         <form action="{{ route('admin.edit-user', $analyst->id) }}" method="POST" class="edit-user-form">
                           @csrf
                           @method('PUT')
@@ -100,6 +117,7 @@
                     </div>
                   </div>
 
+                  <!-- Delete -->
                   <form action="{{ route('admin.delete-user', $analyst->id) }}" method="POST" class="d-inline">
                     @csrf
                     @method('DELETE')
@@ -113,31 +131,29 @@
             @endforeach
           </tbody>
         </table>
-            {{ $analysts->appends(['search' => request('search')])->links() }}
-      @else
-      <div class="alert alert-warning text-center">
-        No results found for "<strong>{{ request('search') }}</strong>"
-    </div>
-    @endif
+        {{ $analysts->appends(['search' => request('search')])->links() }}
+        @else
+        <div class="alert alert-warning text-center">
+          No results found for "<strong>{{ request('search') }}</strong>"
+        </div>
+        @endif
       </div>
     </div>
   </div>
 </div>
 
-
+<!-- Toast -->
 @if(session('success'))
-<div class="toast position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true"
-     data-bs-delay="3000" data-bs-autohide="true">
+<div class="toast position-fixed bottom-0 end-0 m-3" role="alert" data-bs-delay="3000" data-bs-autohide="true">
   <div class="toast-header">
     <strong class="me-auto text-success">Success</strong>
     <small class="text-body-secondary">Just now</small>
-    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
   </div>
   <div class="toast-body bg-dark text-white">
     {{ session('success') }}
   </div>
 </div>
-
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const toastEl = document.querySelector('.toast');
@@ -146,6 +162,7 @@
 </script>
 @endif
 
+<!-- Create Modal -->
 <div class="modal fade" id="popupForm" tabindex="-1" aria-labelledby="popupFormLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content bg-secondary bg-opacity-75">
@@ -156,35 +173,27 @@
       <div class="modal-body">
         <form id="register-form" action="{{ route('admin.create-analyst') }}" method="POST">
           @csrf
-          <div>
           <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="first_name" class="form-label">First Name</label>
-            <input type="text" name="first_name" id="first_name" class="form-control"
-              value="{{ old('first_name') }}" required autofocus>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">First Name</label>
+              <input type="text" name="first_name" class="form-control" required autofocus>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Last Name</label>
+              <input type="text" name="last_name" class="form-control" required>
+            </div>
           </div>
-
-          <div class="col-md-6 mb-3">
-            <label for="last_name" class="form-label">Last Name</label>
-            <input type="text" name="last_name" id="last_name" class="form-control"
-              value="{{ old('last_name') }}" required>
-          </div>
-        </div>
-
           <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" id="email" class="form-control"
-              value="{{ old('email') }}" required>
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" required>
           </div>
-
           <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
+            <label class="form-label">Password</label>
             <div class="password-wrapper">
               <input type="password" id="password" name="password" class="form-control" required>
               <button type="button" class="toggle-password" data-target="password">👁️</button>
             </div>
           </div>
-
           <ul id="password-checklist">
             <li id="length">✖ At least 8 characters</li>
             <li id="lowercase">✖ At least one lowercase letter</li>
@@ -192,106 +201,16 @@
             <li id="number">✖ At least one number</li>
             <li id="special">✖ At least one special character (@$!%*?&)</li>
           </ul>
-
           <div class="mb-3">
-            <label for="password_confirmation" class="form-label">Confirm Password</label>
+            <label class="form-label">Confirm Password</label>
             <div class="password-wrapper">
               <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
               <button type="button" class="toggle-password" data-target="password_confirmation">👁️</button>
             </div>
           </div>
-
           <button type="submit" class="btn btn-success">Create</button>
         </form>
       </div>
     </div>
   </div>
 </div>
-
-<script>
-  document.querySelectorAll(".toggle-password").forEach(button => {
-    button.addEventListener("click", function () {
-      const field = document.getElementById(this.dataset.target);
-      field.type = field.type === "password" ? "text" : "password";
-      this.textContent = field.type === "password" ? "👁️" : "🙈";
-    });
-  });
-
-  const checklist = { length: false, lowercase: false, uppercase: false, number: false, special: false };
-
-  document.getElementById("password").addEventListener("input", function () {
-    const value = this.value;
-    checklist.length = value.length >= 8;
-    checklist.lowercase = /[a-z]/.test(value);
-    checklist.uppercase = /[A-Z]/.test(value);
-    checklist.number = /\d/.test(value);
-    checklist.special = /[@$!%*?&]/.test(value);
-
-    for (let key in checklist) updateChecklist(key, checklist[key]);
-
-    document.getElementById("password-checklist").classList.toggle("hidden", Object.values(checklist).every(Boolean));
-  });
-
-  function updateChecklist(id, isValid) {
-    const item = document.getElementById(id);
-    item.style.color = isValid ? "lime" : "red";
-    item.textContent = `${isValid ? '✔' : '✖'} ${item.textContent.slice(2)}`;
-  }
-
-  document.getElementById("register-form").addEventListener("submit", function (event) {
-    const password = document.getElementById("password").value;
-    const confirmPassword = document.getElementById("password_confirmation").value;
-
-    if (!Object.values(checklist).every(Boolean)) {
-      alert("Password does not meet all the requirements.");
-      event.preventDefault();
-    } else if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-      event.preventDefault();
-    }
-  });
-  
-
-  document.querySelectorAll(".edit-user-form").forEach(form => {
-  const userId = form.querySelector("[name=password]").id.split("_").pop();
-  const passwordInput = document.getElementById(`edit_password_${userId}`);
-  const confirmInput = document.getElementById(`edit_password_confirmation_${userId}`);
-  const checklist = document.getElementById(`edit-password-checklist-${userId}`);
-
-  const requirements = {
-    length: /.{8,}/,
-    lowercase: /[a-z]/,
-    uppercase: /[A-Z]/,
-    number: /\d/,
-    special: /[@$!%*?&]/
-  };
-
-  passwordInput.addEventListener("input", function () {
-    if (this.value) {
-      checklist.style.display = "block";
-      checklist.querySelectorAll("li").forEach(item => {
-        const key = item.className;
-        const valid = requirements[key].test(this.value);
-        item.style.color = valid ? "lime" : "red";
-        item.textContent = `${valid ? '✔' : '✖'} ${item.textContent.slice(2)}`;
-      });
-    } else {
-      checklist.style.display = "none";
-    }
-  });
-
-  form.addEventListener("submit", function (event) {
-    if (passwordInput.value) {
-      const allValid = Object.values(requirements).every(regex => regex.test(passwordInput.value));
-      if (!allValid) {
-        alert("New password does not meet all requirements.");
-        event.preventDefault();
-      } else if (passwordInput.value !== confirmInput.value) {
-        alert("Passwords do not match.");
-        event.preventDefault();
-      }
-    }
-  });
-});
-
-</script>

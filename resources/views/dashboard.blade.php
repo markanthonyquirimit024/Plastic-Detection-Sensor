@@ -1,68 +1,81 @@
-@include('layout.base')
+@extends('layout.base')
+
+@section('content')
 <link rel="stylesheet" href="{{ asset('assets/dashboard.css') }}">
 <title>Dashboard</title>
 
-<div class="container py-5">
+<div class="dashboard-wrapper d-flex">
+    <!-- Main Content -->
+    <div class="container-fluid py-5 flex-grow-1 bg-white min-vh-100">
+        <!-- Header -->
+        <header class="mb-4">
+            <h2 class="fw-bold">Dashboard</h2>
+            <p class="text-muted">Plastic & Non-Plastic Analysis Overview</p>
+            <hr>
+        </header>
 
-    <!-- Header -->
-    <header>
-        <h1>♻ PLASTIC & NON-PLASTIC ANALYSIS</h1>
-        <hr>
-    </header>
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+            @auth
+            @if(Auth::user()->utype === 'ADM')
+            <div class="col-md-4">
+                <div class="card shadow border-0 text-center">
+                    <div class="card-body">
+                        <h6 class="text-muted">Total Users</h6>
+                        <h3 class="fw-bold text-success">{{ $userCount ?? 0 }}</h3>
+                    </div>
+                </div>
+            </div>
+            @endif
+            @endauth
 
-    <!-- Stats Cards -->
-    <div class="row g-4 justify-content-center">
-        @auth
-        @if(Auth::user()->utype === 'ADM')
-        <div class="col-md-3 d-flex">
-            <div class="card text-center flex-fill">
-                <div class="card-body d-flex flex-column justify-content-center">
-                    <h5 class="card-title">Total Users</h5>
-                    <p class="stat-number text-highlight">{{ $userCount ?? 0 }}</p>
+            <div class="col-md-4">
+                <div class="card shadow border-0 text-center">
+                    <div class="card-body">
+                        <h6 class="text-muted">Plastic Detected - Entrance 1</h6>
+                        <h3 class="fw-bold text-danger">{{ $plasticCount ?? 124 }}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow border-0 text-center">
+                    <div class="card-body">
+                        <h6 class="text-muted">Plastic Detected - Entrance 2</h6>
+                        <h3 class="fw-bold text-warning">{{ $nonPlasticCount ?? 86 }}</h3>
+                    </div>
                 </div>
             </div>
         </div>
-        @endif
-        @endauth
 
-        <div class="col-md-3 d-flex">
-            <div class="card text-center flex-fill">
-                <div class="card-body d-flex flex-column justify-content-center">
-                    <h5 class="card-title">Plastic Detected</h5>
-                    <h5 class="card-title">Entrance 1</h5>
-                    <p class="stat-number text-highlight">{{ $plasticCount ?? 124 }}</p>
+        <!-- Chart + Calendar -->
+        <div class="row g-4">
+            <div class="col-md-8">
+                <div class="card border-0">
+                    <div class="card-body">
+                        <h6 class="mb-3 fw-bold">Weekly Detection Trends</h6>
+                        <canvas id="weeklyPlasticChart" height="100"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0">
+                    <div class="card-body">
+                        <h6 class="mb-3 fw-bold">Calendar</h6>
+                        <table class="table table-bordered text-center calendar-table w-100 mb-0" id="calendar-table"></table>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-3 d-flex">
-            <div class="card text-center flex-fill">
-                <div class="card-body d-flex flex-column justify-content-center">
-                    <h5 class="card-title">Plastic Detected</h5>
-                    <h5 class="card-title">Entrance 2</h5>
-                    <p class="stat-number text-highlight">{{ $nonPlasticCount ?? 86 }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Chart -->
-    <div class="mt-5 chart-card">
-        <h5 class="mb-3">Weekly Detection Trends</h5>
-        <canvas id="weeklyPlasticChart" height="100"></canvas>
-    </div>
-
-    <!-- Calendar -->
-    <div class="calendar-container">
-        <h2 class="calendar-title" id="calendar-title">Calendar</h2>
-        <table class="calendar-table" id="calendar-table"></table>
     </div>
 </div>
 
-<div id="hover-popup"></div>
+<!-- Hover Popup -->
+<div id="hover-popup" class="position-absolute bg-dark text-white p-2 rounded small shadow" style="display:none; z-index:1000;"></div>
 
 <script>
-    // Chart
+    // ================== Chart ==================
     const ctx = document.getElementById('weeklyPlasticChart').getContext('2d');
     new Chart(ctx, {
         type: 'line',
@@ -72,16 +85,16 @@
                 {
                     label: 'Plastic Detections',
                     data: [45, 60, 38, 72],
-                    borderColor: '#4fd1c5',
-                    backgroundColor: 'rgba(79, 209, 197, 0.2)',
+                    borderColor: '#198754',
+                    backgroundColor: 'rgba(25, 135, 84, 0.2)',
                     fill: true,
                     tension: 0.4
                 },
                 {
                     label: 'Non-Plastic Detections',
                     data: [30, 40, 50, 33],
-                    borderColor: '#ff6384',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: '#ffc107',
+                    backgroundColor: 'rgba(255, 193, 7, 0.2)',
                     fill: true,
                     tension: 0.4
                 }
@@ -89,17 +102,15 @@
         },
         options: {
             responsive: true,
-            plugins: {
-                legend: { labels: { color: 'white' } }
-            },
+            plugins: { legend: { labels: { color: '#333' } } },
             scales: {
-                x: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                y: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                x: { ticks: { color: '#333' }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                y: { ticks: { color: '#333' }, grid: { color: 'rgba(0,0,0,0.05)' } }
             }
         }
     });
 
-    // Calendar generation
+    // ================== Calendar ==================
     const today = new Date();
     const dailyAnalytics = {};
     const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
@@ -115,9 +126,6 @@
 
     function generateCalendar(year, month) {
         const table = document.getElementById("calendar-table");
-        const title = document.getElementById("calendar-title");
-        const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-        title.textContent = `${monthNames[month]} ${year}`;
         table.innerHTML = "";
 
         const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -126,6 +134,7 @@
         days.forEach(day => {
             const th = document.createElement("th");
             th.textContent = day;
+            th.classList.add("p-2");
             headerRow.appendChild(th);
         });
         thead.appendChild(headerRow);
@@ -140,6 +149,7 @@
             const row = document.createElement("tr");
             for (let j = 0; j < 7; j++) {
                 const cell = document.createElement("td");
+                cell.classList.add("p-2", "calendar-cell");
                 if (i === 0 && j < firstDay || date > daysInMonth) {
                     cell.textContent = "";
                 } else {
@@ -156,39 +166,28 @@
     }
     generateCalendar(today.getFullYear(), today.getMonth());
 
-    // Hover popup
+    // ================== Accurate Hover ==================
     const popup = document.getElementById("hover-popup");
-    document.addEventListener("mousemove", (e) => {
-        const cells = document.querySelectorAll("td[data-day]");
-        let found = false;
-        const todayDateOnly = new Date(today);
-        todayDateOnly.setHours(0, 0, 0, 0);
+    const calendarTable = document.getElementById("calendar-table");
 
-        cells.forEach(cell => {
+    calendarTable.addEventListener("mousemove", (e) => {
+        const cell = e.target.closest("td[data-day]");
+        if (cell) {
             const day = parseInt(cell.getAttribute("data-day"));
             const data = dailyAnalytics[day];
-            const cellDate = new Date(today.getFullYear(), today.getMonth(), day);
-            cellDate.setHours(0, 0, 0, 0);
-
-            if (data && cellDate <= todayDateOnly) {
-                const rect = cell.getBoundingClientRect();
-                const dx = e.clientX - (rect.left + rect.width / 2);
-                const dy = e.clientY - (rect.top + rect.height / 2);
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < 100) {
-                    popup.innerHTML = `
-                        <strong>Day ${day}</strong><br>
-                        🟢 Plastic: <b>${data.plastic}</b><br>
-                        🔵 Non-Plastic: <b>${data.nonPlastic}</b>
-                    `;
-                    popup.style.left = `${e.pageX + 15}px`;
-                    popup.style.top = `${e.pageY - 50}px`;
-                    popup.style.display = "block";
-                    found = true;
-                }
+            if (data) {
+                popup.innerHTML = `
+                    <strong>Day ${day}</strong><br>
+                    🟢 Plastic: <b>${data.plastic}</b><br>
+                    🔵 Non-Plastic: <b>${data.nonPlastic}</b>
+                `;
+                popup.style.left = `${e.pageX + 15}px`;
+                popup.style.top = `${e.pageY - 40}px`;
+                popup.style.display = "block";
             }
-        });
-        if (!found) popup.style.display = "none";
+        } else {
+            popup.style.display = "none";
+        }
     });
 </script>
+@endsection

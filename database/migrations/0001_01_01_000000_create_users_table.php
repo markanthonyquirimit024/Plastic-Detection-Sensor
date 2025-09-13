@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('utype')->default('ANAL');
+            // ✅ utype column with default "USR" (normal user), can be "ADM" for admin
+            $table->string('utype')->default('USR');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
