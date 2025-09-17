@@ -55,6 +55,8 @@ public function searchUser()
      */
     public function store(Request $request)
 {
+    $user = Auth::user();
+
     $request->validate([
         'first_name' => ['required', 'string', 'max:255'],
         'last_name'  => ['required', 'string', 'max:255'],
@@ -70,6 +72,7 @@ public function searchUser()
     ]);
 
     $user = User::create([
+        'user_id' => $user->id,
         'first_name'        => $request->first_name,
         'last_name'         => $request->last_name,
         'email'             => $request->email,

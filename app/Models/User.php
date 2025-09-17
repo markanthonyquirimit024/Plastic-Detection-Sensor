@@ -9,6 +9,9 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use PragmaRX\Google2FA\Google2FA;
 use Illuminate\Support\Facades\Crypt;
+use App\Models\Analyst;
+use App\Models\Customer;
+
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -19,6 +22,11 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * @var array<int, string>
      */
+
+    const ADM = 'ADM';
+    const SVP = 'ANAL';                                                                                
+    const CST = 'CUST';
+
     protected $fillable = [
         'first_name',
         'last_name',
@@ -29,6 +37,12 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at',
         'utype'
     ];
+
+    public function utype()
+    {
+        return $this->getAttribute('utype');
+    }
+
 
     /**
      * The attributes that should be hidden for serialization.

@@ -67,8 +67,8 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 | Registration Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
-Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.post');
+Route::get('/user-registration', [RegisteredUserController::class, 'create'])->name('register');
+Route::post('/user-registration', [RegisteredUserController::class, 'store'])->name('register.post');
 
 /*
 |--------------------------------------------------------------------------
@@ -112,7 +112,8 @@ Route::middleware(['auth', TwoFactorMiddleware::class])->group(function () {
 */
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile', [ProfileController::class, 'update_profile'])->name('profile.update');
+    Route::post('/profile', [ProfileController::class, 'change_password'])->name('profile.change_password');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/data-explorer', [DataExplorerController::class, 'index'])->name('data-explorer');
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports');

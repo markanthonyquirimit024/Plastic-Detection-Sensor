@@ -9,10 +9,8 @@
     <style>
       /* General styling */
    body {
-  background: #ffffff;
-  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(9, 121, 54, 1) 92%, rgba(9, 121, 54, 1) 100%);
+  background: linear-gradient(135deg, #0d0d0d, #1a3d1f);
   background-position: center;
-  
   display: flex;
   justify-content: center;
   align-items: center;
@@ -40,7 +38,6 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(107, 107, 107, 0.5);
         z-index: -1;
       }
 
@@ -184,7 +181,6 @@
     <!-- Additional Links -->
     <div class="links">
       <a href="{{ route('password.request') }}">Forgot Password?</a><br>
-      <span>Don't have an account? <a href="{{ route('register') }}">Register here!</a></span>
     </div>
   </div>
 

@@ -58,7 +58,7 @@ body {
 
 /* Active link with smooth outward curve */
 .sidebar-link.active {
-    background: #fff;
+    background: #f8f9fa;
     color: #1b7b47 !important;
     font-weight: 600;
     margin-right: -60px;          /* extend into content */
@@ -129,8 +129,9 @@ body {
     flex-grow: 1;
     margin-left: 240px;
     padding: 2rem;
-    background: #fff;
+    background: #f8f9fa;
     min-height: 100vh;
     overflow-y: auto;
     border-radius: 25px 0 0 25px;
 }
+
