@@ -16,7 +16,7 @@ class RegisteredUserController extends Controller
      */
     public function create()
     {
-        return view('auth.register'); // ✅ Ensure you have register.blade.php
+        return view('auth.register');
     }
 
     /**
@@ -38,17 +38,15 @@ class RegisteredUserController extends Controller
             ],
         ]);
 
-        // ✅ Create user but do NOT log in yet
         $user = User::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
+            'email_verified_at' => now(),
+            'utype' => 'CUST',
         ]);
 
-        // ✅ Send email verification notification
-        event(new Registered($user));
-
-        return redirect()->route('login')->with('success', 'Registration successful! Please check your email to verify your account.');
+        return redirect()->route('login')->with('success', 'Registration successful!');
     }
 }

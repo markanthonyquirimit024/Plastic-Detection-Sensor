@@ -36,21 +36,21 @@
                 <li class="nav-item">
                     <a href="{{ route('dashboard') }}" 
                        class="nav-link sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                        <i class="bi bi-house-door-fill me-2"></i> Home
+                        <i class="bi bi-house-door-fill me-2"></i> Dashboard
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="{{ route('reports') }}" 
                        class="nav-link sidebar-link {{ request()->routeIs('reports') ? 'active' : '' }}">
-                        <i class="bi bi-people-fill me-2"></i> User Control
+                        <i class="bi bi-people-fill me-2"></i> Report
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="{{ route('data-explorer') }}" 
                        class="nav-link sidebar-link {{ request()->routeIs('data-explorer') ? 'active' : '' }}">
-                        <i class="bi bi-shield-lock-fill me-2"></i> Access Request
+                        <i class="bi bi-shield-lock-fill me-2"></i> Data Explorer
                     </a>
                 </li>
 
@@ -75,7 +75,7 @@
                 <li class="nav-item">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="nav-link sidebar-link text-danger w-100 text-start">
+                        <button type="submit" class="nav-link sidebar-link text-danger w-100 text-start" onclick="return confirm('Are you sure you want to logout this account?')">
                             <i class="bi bi-box-arrow-right me-2"></i> Logout
                         </button>
                     </form>

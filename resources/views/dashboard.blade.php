@@ -6,7 +6,7 @@
 
 <div class="dashboard-wrapper d-flex">
     <!-- Main Content -->
-    <div class="container-fluid py-5 flex-grow-1 bg-white min-vh-100">
+    <div class="container-fluid py-5 flex-grow-1 min-vh-100" style="background-color: #f8f9fa;">
         <!-- Header -->
         <header class="mb-4">
             <h2 class="fw-bold">Dashboard</h2>
@@ -21,7 +21,7 @@
             <div class="col-md-4">
                 <div class="card shadow border-0 text-center">
                     <div class="card-body">
-                        <h6 class="text-muted">Total Users</h6>
+                        <h6>Total Users</h6>
                         <h3 class="fw-bold text-success">{{ $userCount ?? 0 }}</h3>
                     </div>
                 </div>
@@ -32,7 +32,7 @@
             <div class="col-md-4">
                 <div class="card shadow border-0 text-center">
                     <div class="card-body">
-                        <h6 class="text-muted">Plastic Detected - Entrance 1</h6>
+                        <h6>Plastic Detected - Entrance 1</h6>
                         <h3 class="fw-bold text-danger">{{ $plasticCount ?? 124 }}</h3>
                     </div>
                 </div>
@@ -41,7 +41,7 @@
             <div class="col-md-4">
                 <div class="card shadow border-0 text-center">
                     <div class="card-body">
-                        <h6 class="text-muted">Plastic Detected - Entrance 2</h6>
+                        <h6>Plastic Detected - Entrance 2</h6>
                         <h3 class="fw-bold text-warning">{{ $nonPlasticCount ?? 86 }}</h3>
                     </div>
                 </div>

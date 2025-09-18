@@ -5,7 +5,13 @@ body {
   color: #212529;
   min-height: 100vh;
   overflow-x: hidden;
+  overflow-y: auto;
   margin: 0;
+}
+
+.container {
+  min-height: 100vh;
+  padding-bottom: 50px; /* ✅ ensures space for bottom content */
 }
 
 /* Wrapper full screen */
@@ -46,6 +52,7 @@ header hr {
   box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   border: none;
+  
 }
 .card:hover {
   transform: translateY(-3px);

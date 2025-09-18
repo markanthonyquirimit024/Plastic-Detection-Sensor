@@ -6,36 +6,77 @@ use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
+use Illuminate\Validation\Rules\Password;
+
 
 class ProfileController extends Controller
 {
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+    public function edit(Request $request)
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        $user = Auth::user();
+        return view('profile.edit', compact('user'));      
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $request->user()->fill($request->validated());
+public function update_profile(Request $request)
+{
+    $user = Auth::user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
+    $validator = Validator::make($request->all(), [
+        'first_name' => 'required|string|max:255',
+        'last_name'  => 'required|string|max:255',
+        'email'      => 'required|email|unique:users,email,' . $user->id,
+    ]);
 
-        $request->user()->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput();
     }
+
+    $user->first_name = $request->input('first_name');
+    $user->last_name  = $request->input('last_name');
+    $user->email      = $request->input('email');
+
+    $user->save();
+
+    return redirect()->route('profile.edit')->with('success', 'Profile updated successfully.');
+}
+
+public function change_password(Request $request)
+{
+    $request->validate([
+        'current_password' => ['required'],
+        'password' => [
+            'required',
+            'string',
+            'confirmed',
+            Password::min(8)
+                ->mixedCase()
+                ->letters()
+                ->numbers()
+                ->symbols(),
+        ],
+    ]);
+
+    $user = Auth::user();
+
+    if (!Hash::check($request->current_password, $user->password)) {
+        return back()->withErrors(['current_password' => 'Your current password is incorrect.']);
+    }
+
+    $user->password = Hash::make($request->password);
+    $user->save();
+
+    return redirect()
+        ->route('profile.edit')
+        ->with('success', 'Password updated successfully!');
+}
+
 
     /**
      * Delete the user's account.
