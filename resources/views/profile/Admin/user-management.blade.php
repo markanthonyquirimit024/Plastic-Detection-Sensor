@@ -2,18 +2,19 @@
 <title>User Management</title>
 <link rel="stylesheet" href="{{ asset('assets/user-management.css') }}">
 
-<div class="main-content py-5" id="main-content">
   <div class="container">
     <div class="card shadow-lg border-0 rounded-4 p-4" id="usertable">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="fw-bold text-primary mb-0">Manage Analysts</h1>
-        <a class="btn btn-gradient px-4 py-2 rounded-pill" data-bs-toggle="modal" data-bs-target="#popupForm">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h3 class="fw-bold text-dark mb-0">Manage Analysts</h3>
+        <a class="btn btn-success px-4 py-2 rounded-pill" data-bs-toggle="modal" data-bs-target="#popupForm">
           + Create Analyst
         </a>
         <form method="GET" action="{{ route('admin.user-management') }}" class="mb-3 d-flex">
         <input type="text" name="search" class="form-control me-2" 
               placeholder="Search users..." value="{{ request('search') }}">
-        <button type="submit" class="btn btn-primary">Search</button>
+          <button type="submit" class="btn btn-success w-100 rounded-3">
+            <i class="bi bi-search me-1"></i> Search
+          </button>        
         </form>
       </div>
 
@@ -122,7 +123,6 @@
       </div>
     </div>
   </div>
-</div>
 
 
 @if(session('success'))

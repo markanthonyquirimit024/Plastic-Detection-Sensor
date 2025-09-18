@@ -1,15 +1,15 @@
-@if (session('message'))
+@if (session('success'))
     <div 
-        {{ $attributes->merge(['class' => 'success-message']) }}
-        style="color: green;
+        {{ $attributes->merge(['class' => 'success-success']) }}
+        style="color: white;
                font-size: 14px;
                margin-bottom: 10px;
-               background: rgba(0, 255, 0, 0.2);
+               background: green;
                padding: 10px;
                border-radius: 5px;
                border: 1px solid green;
                text-align: center;
-               width: 90%;">
-        {{ session('message') }}
+               width: 100%;">
+         {{ session('success') }}
     </div>
 @endif
