@@ -6,7 +6,7 @@
 
 <div class="dashboard-wrapper d-flex">
     <!-- Main Content -->
-    <div class="container-fluid py-5 flex-grow-1 bg-white min-vh-100">
+    <div class="container-fluid py-5 flex-grow-1 v min-vh-100">
         <!-- Header -->
         <header class="mb-4">
             <h2 class="fw-bold">Dashboard</h2>
@@ -32,7 +32,8 @@
                 <div class="card shadow border-0 text-center">
                     <div class="card-body">
                         <h6 class="text-muted">Plastic Detected - Entrance 1</h6>
-                        <h3 class="fw-bold text-danger">{{ $plasticCount ?? 124 }}</h3>
+                        <!-- ✅ Added ID -->
+                        <h3 id="plasticCount" class="fw-bold text-danger">{{ $plasticCount ?? 124 }}</h3>
                     </div>
                 </div>
             </div>
@@ -41,7 +42,8 @@
                 <div class="card shadow border-0 text-center">
                     <div class="card-body">
                         <h6 class="text-muted">Plastic Detected - Entrance 2</h6>
-                        <h3 class="fw-bold text-warning">{{ $nonPlasticCount ?? 86 }}</h3>
+                        <!-- ✅ Added ID -->
+                        <h3 id="nonPlasticCount" class="fw-bold text-warning">{{ $nonPlasticCount ?? 86 }}</h3>
                     </div>
                 </div>
             </div>
@@ -52,7 +54,7 @@
                 <div class="card border-0">
                     <div class="card-body">
                         <h6 class="mb-3 fw-bold">Weekly Detection Trends</h6>
-                        <p class="text-muted fst-italic">Note: This chart requires timestamps in Firebase to function.</p>
+                        <p class="text-muted fst-italic">Note: This chart timestamps.</p>
                         <canvas id="weeklyPlasticChart" height="100"></canvas>
                     </div>
                 </div>
@@ -71,8 +73,10 @@
     </div>
 </div>
 
+<!-- Hover popup -->
 <div id="hover-popup" class="position-absolute bg-dark text-white p-2 rounded small shadow" style="display:none; z-index:1000;"></div>
 
+<!-- Firebase + Chart.js -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -140,6 +144,7 @@ function initializeDashboard() {
         fullData = snapshot.val() || {};
         const result = countPlasticLogs(fullData);
 
+        // ✅ Now these IDs exist
         document.getElementById('plasticCount').textContent = result.plastic;
         document.getElementById('nonPlasticCount').textContent = result.nonPlastic;
 
@@ -175,11 +180,10 @@ function initializeDashboard() {
                     cell.addEventListener('mouseenter', (e)=>{
                         const d = e.target.dataset.date;
                         let plastic=0, nonPlastic=0;
-                        if(fullData[d] && fullData[d].logs && fullData[d].logs.Obstacle){
-                            Object.values(fullData[d].logs.Obstacle).forEach(val=>{
-                                if(val==="Detected") plastic++;
-                                else if(val==="Clear") nonPlastic++;
-                            });
+                        if(fullData[d]) {
+                            const result = countPlasticLogs(fullData[d]);
+                            plastic = result.plastic;
+                            nonPlastic = result.nonPlastic;
                         }
                         const popup = document.getElementById('hover-popup');
                         popup.innerHTML = `Plastic: ${plastic}<br>Non-Plastic: ${nonPlastic}`;

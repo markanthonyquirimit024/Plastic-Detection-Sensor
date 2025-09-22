@@ -14,9 +14,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\DataExplorerController;
 use App\Http\Controllers\ReportsController;
-use Kreait\Firebase\Factory;
 use App\Http\Controllers\FirebaseController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -34,14 +32,8 @@ Route::get('/', function () {
 | Captcha Routes
 |--------------------------------------------------------------------------
 */
-
-// Display Captcha Page
 Route::get('/captcha', [CaptchaController::class, 'showCaptcha'])->name('captcha.page');
-
-// Generate New Captcha (For AJAX Refresh)
 Route::get('/captcha-refresh', [CaptchaController::class, 'refreshCaptcha'])->name('captcha.show');
-
-// Verify Captcha Input
 Route::post('/captcha-verify', [CaptchaController::class, 'verifyCaptcha'])->name('captcha.verify');
 
 /*
@@ -72,7 +64,7 @@ Route::post('/user-registration', [RegisteredUserController::class, 'store'])->n
 
 /*
 |--------------------------------------------------------------------------
-| Two-Factor Authentication Routes (Protected)
+| Two-Factor Authentication Routes
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
@@ -91,17 +83,18 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', TwoFactorMiddleware::class])->group(function () {
     Route::get('/dashboard', function () {
         $stats = [
-        'visitors' => 15230,
-        'pageViews' => 40213,
-        'bounceRate' => 47.3,
-        'sessionDuration' => '3m 25s'
-    ];
+            'visitors' => 15230,
+            'pageViews' => 40213,
+            'bounceRate' => 47.3,
+            'sessionDuration' => '3m 25s'
+        ];
 
-    $chartData = [
-        'labels' => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        'values' => [1200, 1500, 1700, 1300, 1900, 2300, 2000]
-    ];
-    return view('dashboard', compact('stats', 'chartData'));
+        $chartData = [
+            'labels' => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            'values' => [1200, 1500, 1700, 1300, 1900, 2300, 2000]
+        ];
+
+        return view('dashboard', compact('stats', 'chartData'));
     })->name('dashboard');
 });
 
@@ -119,19 +112,33 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
 });
 
-Route::middleware(['auth:sanctum', 'verified', 'authadmin'])->group(function () {
-    // User Management
+/*
+|--------------------------------------------------------------------------
+| Admin Routes (Require Login + Verified + Admin Role)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth:sanctum', 'authadmin'])->group(function () {
     Route::get('/admin/user-management', [SubAdminController::class, 'index'])->name('admin.user-management');
     Route::post('/admin/user-management/create-analyst', [SubAdminController::class, 'store'])->name('admin.create-analyst');
     Route::put('/admin/user-management/{id}', [SubAdminController::class, 'update'])->name('admin.edit-user');
     Route::delete('/admin/user-management/{id}', [SubAdminController::class, 'destroy'])->name('admin.delete-user');
-    });
+});
 
+/*
+|--------------------------------------------------------------------------
+| Firebase Routes
+|--------------------------------------------------------------------------
+*/
 Route::get('/firebase/write', [FirebaseController::class, 'write']);
 Route::get('/firebase/read', [FirebaseController::class, 'read']);
 
-Route::middleware(['auth:sanctum','verified', 'authanalyst'])->group(function () {
-
+/*
+|--------------------------------------------------------------------------
+| Analyst Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth:sanctum', 'verified', 'authanalyst'])->group(function () {
+    // Add analyst-specific routes here
 });
 
 /*
