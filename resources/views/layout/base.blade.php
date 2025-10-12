@@ -25,10 +25,87 @@
     <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
 
     <title>@yield('title', 'EcoScan')</title>
+
+    <style>
+        /* --- Responsive Sidebar --- */
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 18px;
+            left: 20px;
+            z-index: 2000;
+            background: #1b7b47;
+            border: none;
+            color: #fff;
+            font-size: 1.8rem;
+            padding: 8px 12px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .hamburger:hover {
+            background: #16663a;
+        }
+
+        @media (max-width: 992px) {
+            .hamburger { display: block; }
+
+            .sidebar {
+                position: fixed;
+                left: -260px;
+                top: 0;
+                height: 100%;
+                width: 250px;
+                z-index: 1500;
+                transition: all 0.4s ease;
+                border-radius: 0 25px 25px 0;
+            }
+
+            /* When active: black blur glass */
+            .sidebar.active {
+                left: 0;
+                backdrop-filter: blur(14px);
+                background: rgba(0, 0, 0, 0.6);
+                box-shadow: 4px 0 25px rgba(0,0,0,0.4);
+            }
+
+            .sidebar.active .sidebar-logo {
+                color: #ffd700;
+            }
+
+            .sidebar.active .sidebar-link {
+                color: #f8f9fa;
+                transition: all 0.3s ease;
+            }
+
+            .sidebar.active .sidebar-link:hover {
+                background: rgba(255,255,255,0.12);
+                box-shadow: 0 0 12px rgba(255,255,255,0.1);
+                transform: translateX(4px);
+            }
+
+            .content {
+                margin-left: 0;
+                padding-top: 70px;
+            }
+        }
+
+        /* Optional smooth content shadow on mobile open */
+        .sidebar.active + .content {
+            filter: brightness(0.85);
+            transition: filter 0.3s ease;
+        }
+    </style>
 </head>
 <body>
+    <!-- Hamburger Button -->
+    <button class="hamburger" id="hamburgerBtn">
+        <i class="bi bi-list"></i>
+    </button>
+
     <!-- Sidebar -->
-    <aside class="sidebar d-flex flex-column p-3">
+    <aside class="sidebar d-flex flex-column p-3" id="sidebar">
         <h2 class="sidebar-logo mb-4">Eco<span class="text-light">Scan</span></h2>
 
         <nav class="flex-grow-1">
@@ -92,5 +169,22 @@
     <main class="content">
         @yield('content')
     </main>
+
+    <!-- Toggle Script -->
+    <script>
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+
+        hamburgerBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            hamburgerBtn.classList.toggle('open');
+
+            if (hamburgerBtn.classList.contains('open')) {
+                hamburgerBtn.innerHTML = '<i class="bi bi-x-lg"></i>';
+            } else {
+                hamburgerBtn.innerHTML = '<i class="bi bi-list"></i>';
+            }
+        });
+    </script>
 </body>
 </html>
