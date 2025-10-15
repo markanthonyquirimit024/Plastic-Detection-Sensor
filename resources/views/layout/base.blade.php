@@ -3,10 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <!-- Bootstrap Icons -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
@@ -16,6 +18,10 @@
 
 <!-- Custom CSS -->
 <link rel="stylesheet" href="{{ asset('assets/base.css') }}">
+
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <title>@yield('title', 'EcoScan')</title>
 </head>
@@ -36,6 +42,9 @@
     <div id="sensorDot" class="sensor-dot offline"></div>
     <p id="sensorText" class="fw-bold text-secondary mb-0">OFF</p>
     <small>Sensor Status</small>
+    <p class="mt-1">Legend</p>
+    <p class="text-center">🔴 - Off</p>
+    <p class="ms-5 text-center">⚪ - Add Count</p>
   </div>
 
   <nav class="flex-grow-1">
@@ -61,7 +70,7 @@
         </a>
       </li>
       @auth
-        @if(Auth::user()->utype === 'ADM')
+        @if(Auth::user()->utype === 'Admin')
           <li class="nav-item">
             <a href="{{ route('admin.user-management') }}" class="nav-link sidebar-link {{ request()->routeIs('admin.user-management') ? 'active' : '' }}">
               <i class="bi bi-people-fill me-2"></i> User Management
@@ -70,10 +79,10 @@
         @endif
       @endauth
       <li class="nav-item">
-        <form method="POST" action="{{ route('logout') }}">
+        <form method="POST" action="{{ route('logout') }}" id="logout-form">
           @csrf
-          <button type="submit" class="nav-link sidebar-link text-danger w-100 text-start" onclick="return confirm('Are you sure you want to logout this account?')">
-            <i class="bi bi-box-arrow-right me-2"></i> Logout
+          <button type="button" class="nav-link sidebar-link text-danger w-100 text-start bg-danger text-light" onclick="confirmLogout(event)">
+          <i class="bi bi-box-arrow-right me-2"></i> Logout
           </button>
         </form>
       </li>
@@ -93,6 +102,28 @@
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+<script>
+// Logout Notification
+  function confirmLogout(event) {
+    event.preventDefault();
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You will be logged out of your account.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, logout',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('logout-form').submit();
+        }
+    });
+}
+</script>
 
 <script>
 const sensorDot = document.getElementById('sensorDot');

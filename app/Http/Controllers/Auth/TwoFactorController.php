@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TwoFactorCodeMail;
+use Illuminate\Support\Facades\DB;
 
 class TwoFactorController extends Controller
 {
@@ -103,6 +104,21 @@ class TwoFactorController extends Controller
         if ($request->input('code') == $storedCode) {
             session()->forget(['2fa_code', '2fa_expires_at']); // Remove 2FA code after use
             session(['2fa_passed' => true]); // Mark 2FA as passed
+            $user = Auth::user();
+
+            $sessionId = DB::table('user_sessions')->insertGetId([
+                'user_id' => $user->id,
+                'login_time' => now(),
+                'ip_address' => request()->ip(),
+                'user_agent' => substr(request()->userAgent(), 0, 500),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            session(['user_session_id' => $sessionId]);
+
+            $user->last_login = now();
+            $user->save();
             return redirect()->route('dashboard');
         }
 

@@ -20,12 +20,14 @@ class SubAdminController extends Controller
         $user = Auth::user();
         $search = $request->input('search');
 
-        // Query users
-        $analysts = User::when($search, function ($query, $search) {
-            $query->where('first_name', 'LIKE', "%{$search}%")
-            ->orWhere('last_name', 'LIKE', "%{$search}%")
-            ->orWhere('email', 'LIKE', "%{$search}%")
-            ->orWhere('id', 'LIKE', "%{$search}%");
+       $analysts = User::where('id', '!=', 1)
+        ->when($search, function ($query, $search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'LIKE', "%{$search}%")
+                  ->orWhere('last_name', 'LIKE', "%{$search}%")
+                  ->orWhere('email', 'LIKE', "%{$search}%")
+                  ->orWhere('id', 'LIKE', "%{$search}%");
+            });
         })
         ->orderBy('id', 'asc')
         ->paginate(10);
@@ -78,7 +80,7 @@ public function searchUser()
         'email'             => $request->email,
         'password'          => Hash::make($request->password),
         'email_verified_at' => now(),
-        'utype'             => 'ANAL',
+        'utype'             => 'Analyst',
     ]);
 
     return back()->with('success', 'User created successfully.');

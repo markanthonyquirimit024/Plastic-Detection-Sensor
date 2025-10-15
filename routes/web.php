@@ -12,6 +12,7 @@ use App\Http\Middleware\TwoFactorMiddleware;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataExplorerController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\FirebaseController;
@@ -80,33 +81,17 @@ Route::middleware(['auth'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', TwoFactorMiddleware::class])->group(function () {
-    Route::get('/dashboard', function () {
-        $stats = [
-            'visitors' => 15230,
-            'pageViews' => 40213,
-            'bounceRate' => 47.3,
-            'sessionDuration' => '3m 25s'
-        ];
-
-        $chartData = [
-            'labels' => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-            'values' => [1200, 1500, 1700, 1300, 1900, 2300, 2000]
-        ];
-
-        return view('dashboard', compact('stats', 'chartData'));
-    })->name('dashboard');
-});
-
-/*
-|--------------------------------------------------------------------------
-| Profile Routes (Require Authentication)
-|--------------------------------------------------------------------------
-*/
-Route::middleware('auth')->group(function () {
+    /*
+    |--------------------------------------------------------------------------
+    | Profile Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update_profile'])->name('profile.update');
     Route::post('/profile', [ProfileController::class, 'change_password'])->name('profile.change_password');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
     Route::get('/data-explorer', [DataExplorerController::class, 'index'])->name('data-explorer');
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
 });

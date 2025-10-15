@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -11,7 +12,23 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        //
+        $totalUsers = User::where('id', '!=', 1)->count();
+
+        $stats = [
+            'visitors' => 15230,
+            'pageViews' => 40213,
+            'bounceRate' => 47.3,
+            'sessionDuration' => '3m 25s'
+        ];
+
+        $chartData = [
+            'labels' => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            'values' => [1200, 1500, 1700, 1300, 1900, 2300, 2000]
+        ];
+
+        $firebaseConfig = config('services.firebase');
+
+        return view('dashboard', compact('stats', 'chartData','firebaseConfig','totalUsers'));
     }
 
     /**

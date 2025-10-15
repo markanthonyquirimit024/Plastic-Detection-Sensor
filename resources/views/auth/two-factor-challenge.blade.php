@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <title>Two-Factor Authentication</title>
     <style>
         /* General styling */
@@ -171,10 +173,29 @@
     <div id="popupMessage" class="popup-message">Look for Mailtrap, your code is sent already!</div>
 
     <!-- ✅ Back to Login word link -->
-    <a href="{{ route('login') }}" class="back-link">← Back to Login</a>
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: inline;">
+    @csrf
+    <button type="button" class="back-link" onclick="confirmLogout()">← Logout</button>
+    </form>
 </div>
 
 <script>
+    function confirmLogout() {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You will be logged out of your account.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, logout'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('logout-form').submit();
+            }
+        });
+    }
+
     let countdown = 30;
     const resendButton = document.getElementById('resendButton');
     const sendButton = document.getElementById('sendButton');
