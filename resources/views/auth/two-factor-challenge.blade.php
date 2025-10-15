@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
-
     <title>Two-Factor Authentication</title>
     <style>
         /* General styling */
         body {
-            background: #ffffff;
-            background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(9, 121, 54, 1) 92%, rgba(9, 121, 54, 1) 100%);
+            background: linear-gradient(135deg, #ffffff, #4caf50);
             background-position: center;
             display: flex;
             justify-content: center;
@@ -21,19 +19,7 @@
             position: relative;
         }
 
-        /* Background overlay */
-        body::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(107, 107, 107, 0.5);
-            z-index: -1;
-        }
-
-        /* Two-Factor Authentication container */
+        /* Container */
         .auth-container {
             background: rgba(255, 255, 255, 0.15);
             padding: 30px;
@@ -55,13 +41,6 @@
             box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
         }
 
-        /* Form styling */
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
         /* Input fields */
         .input-field {
             width: 90%;
@@ -71,15 +50,11 @@
             border-radius: 8px;
             font-size: 16px;
             background: rgba(255, 255, 255, 0.3);
-            color: white;
+            color: black;
             outline: none;
             transition: 0.3s;
             box-shadow: inset 0px 0px 5px rgba(255, 255, 255, 0.3);
             text-align: center;
-        }
-
-        .input-field::placeholder {
-            color: rgba(255, 255, 255, 0.7);
         }
 
         .input-field:focus {
@@ -87,11 +62,11 @@
             box-shadow: inset 0px 0px 10px rgba(255, 255, 255, 0.5);
         }
 
-        /* Button */
+        /* Buttons */
         .auth-btn {
             width: 90%;
             padding: 12px;
-            background: linear-gradient(90deg,rgb(71, 71, 71),rgb(74, 143, 68));
+            background: linear-gradient(90deg, rgb(71, 71, 71), rgb(74, 143, 68));
             border: none;
             color: white;
             font-size: 16px;
@@ -104,50 +79,58 @@
         }
 
         .auth-btn:hover {
-            background: linear-gradient(90deg,rgb(78, 104, 79),rgb(9, 114, 0));
+            background: linear-gradient(90deg, rgb(78, 104, 79), rgb(9, 114, 0));
             box-shadow: 0px 6px 15px rgba(27, 131, 23, 0.5);
         }
 
-        /* Disabled button (gray) */
         .disabled {
             background-color: #aaa;
             cursor: not-allowed;
             box-shadow: none;
         }
 
-        /* Error messages */
+        /* Back to Login link */
+        .back-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: black;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            color: #0f8a12;
+            text-decoration: underline;
+        }
+
+        /* Messages */
+        .error-message, .success-message {
+            width: 90%;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
         .error-message {
             color: red;
-            font-size: 14px;
-            margin-bottom: 10px;
             background: rgba(255, 0, 0, 0.2);
-            padding: 10px;
-            border-radius: 5px;
             border: 1px solid red;
-            text-align: center;
-            width: 90%;
         }
 
-        /* Success messages */
         .success-message {
             color: green;
-            font-size: 14px;
-            margin-bottom: 10px;
             background: rgba(0, 255, 0, 0.2);
-            padding: 10px;
-            border-radius: 5px;
             border: 1px solid green;
-            text-align: center;
-            width: 90%;
         }
 
-        /* Timer */
         .timer {
             font-size: 14px;
             color: white;
         }
 
-        /* Pop-up message */
         .popup-message {
             display: none;
             background-color: rgba(0, 255, 0, 0.2);
@@ -163,24 +146,11 @@
 <body>
 
 <div class="auth-container">
-
-    <!-- Logout Icon -->
-    <div style="margin-left: 330px;">
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit"
-                onclick="event.preventDefault(); if(confirm('Are you sure you want to log out?')) { this.form.submit(); }">
-                <img src="{{ asset('images/logout-icon.jpg') }}" alt="Logout" width="40">
-            </button>
-        </form>
-    </div>
-
-
-    <!-- Circular Logo -->
+    <!-- Logo -->
     <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
 
-    <h2 style="color: white;">One-Time Password(OTP)</h2>
-    <p style="color: white;">Enter the OTP code sent to your email:</p>
+    <h2 style="color: black;">One-Time Password (OTP)</h2>
+    <p style="color: black;">Enter the OTP code sent to your email:</p>
 
     @if ($errors->any())
         <p class="error-message">{{ $errors->first() }}</p>
@@ -192,20 +162,20 @@
         <button type="submit" class="auth-btn">Verify</button>
     </form>
 
-    <!-- Send Button to send code to Mailtrap -->
     <button id="sendButton" class="auth-btn" onclick="handleSend()">Send Code</button>
 
-    <!-- Resend 2FA Code -->
-    <p style="color: white;">Didn't receive the code?</p>
+    <p style="color: black;">Didn't receive the code?</p>
     <button id="resendButton" class="auth-btn disabled" onclick="resendCode()" disabled>Resend Code</button>
     <p id="timer" class="timer"></p>
 
-    <!-- Pop-up message -->
     <div id="popupMessage" class="popup-message">Look for Mailtrap, your code is sent already!</div>
+
+    <!-- ✅ Back to Login word link -->
+    <a href="{{ route('login') }}" class="back-link">← Back to Login</a>
 </div>
 
 <script>
-    let countdown = 30; // Set cooldown timer (in seconds)
+    let countdown = 30;
     const resendButton = document.getElementById('resendButton');
     const sendButton = document.getElementById('sendButton');
     const timerDisplay = document.getElementById('timer');
@@ -218,55 +188,43 @@
             setTimeout(updateTimer, 1000);
         } else {
             resendButton.disabled = false;
-            resendButton.classList.remove('disabled');  // Remove 'disabled' class
-            resendButton.classList.add('auth-btn');  // Apply the 'auth-btn' class (blue color)
+            resendButton.classList.remove('disabled');
+            resendButton.classList.add('auth-btn');
             timerDisplay.innerText = "";
         }
     }
 
     function handleSend() {
-        // Disable Send button and hide it after clicking
         sendButton.disabled = true;
-        sendButton.style.display = "none";  // Hide the button
+        sendButton.style.display = "none";
         updateTimer();
 
-        // Send request to Laravel to send the 2FA code via Mailtrap
         fetch("{{ route('2fa.send') }}", {
             method: "GET",
             headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" }
-        }).then(response => {
-            return response.json();
-        }).then(data => {
-            // Display success message and show it
+        }).then(response => response.json())
+        .then(() => {
             popupMessage.style.display = "block";
-            setTimeout(() => {
-                popupMessage.style.display = "none"; // Hide the message after 5 seconds
-            }, 5000);
-        }).catch(error => {
+            setTimeout(() => { popupMessage.style.display = "none"; }, 5000);
+        }).catch(() => {
             alert("Look for Mailtrap, your code is sent already!");
         });
     }
 
     function resendCode() {
         resendButton.disabled = true;
-        resendButton.classList.add('disabled'); // Apply gray color when disabled
-        countdown = 30; // Reset timer
+        resendButton.classList.add('disabled');
+        countdown = 30;
         updateTimer();
 
-        // Send request to Laravel to resend the 2FA code
         fetch("{{ route('2fa.resend') }}", {
             method: "GET",
             headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" }
-        }).then(response => {
-            return response.json();
-        }).then(data => {
-            alert(data.message);
-        }).catch(error => {
-            alert("Failed to resend code. Please try again.");
-        });
+        }).then(response => response.json())
+        .then(data => alert(data.message))
+        .catch(() => alert("Failed to resend code. Please try again."));
     }
 
-    // Start initial cooldown
     updateTimer();
 </script>
 

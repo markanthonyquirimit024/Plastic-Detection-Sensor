@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{ asset('assets/edit.css') }}">
 
 @section('content')
-    <div class="page-title">⚙️ My Profile</div>
+    <div class="page-title">My Profile</div>
 
     <div class="profile-layout">
         <!-- Left Overview -->

@@ -1,180 +1,212 @@
 body {
-        font-family: 'Inter', sans-serif;
-        color: white;
-        margin: 0;
-    }
+    font-family: 'Montserrat', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: white;
+    margin: 0;
+}
 
-    .page-title {
-        font-size: 2rem;
-        font-weight: 600;
-        margin-bottom: 30px;
-        text-align: center;
-    }
+.page-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 30px;
+    text-align: center;
+}
 
+/* Layout for profile + settings */
+.profile-layout {
+    display: flex;
+    gap: 30px; /* space between profile card and right card */
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0 20px;
+}
+
+/* Profile Overview card – smaller size, with border */
+.profile-overview {
+    flex: 0 0 280px;   /* fixed width */
+    background: rgba(255,255,255,0.08);
+    border-radius: 18px;
+    padding: 20px;
+    text-align: center;
+    backdrop-filter: blur(12px);
+    color: black;
+    border: 1px solid #000000; /* border added */
+    margin-right: 10px; /* pushes right card away */
+}
+
+/* Avatar */
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    border: 3px solid #4caf50;
+    object-fit: cover;
+}
+
+.user-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+.user-role {
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+/* Stats grid */
+.stats {
+    display: grid;
+    gap: 12px;
+}
+
+/* Stat cards – with border */
+.stat-card {
+    background: rgba(255,255,255,0.1);
+    padding: 12px;
+    border-radius: 12px;
+    text-align: left;
+    border: 1px solid #000000;
+}
+.stat-card h3 {
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+.stat-card p {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* Right Side (Tabs & Forms) – with border */
+.profile-settings {
+    flex: 1;  /* take remaining space */
+    min-width: 350px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 18px;
+    padding: 20px;
+    backdrop-filter: blur(12px);
+    border: 1px solid #000000; /* border added */
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+.tab-btn {
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid #4caf50;
+    cursor: pointer;
+    background: rgba(255,255,255,0.1);
+    color: black;
+    font-weight: 500;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.tab-btn.active, .tab-btn:hover {
+    background: linear-gradient(90deg, #4caf50, #2f6d2a);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    color: white;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.4s ease-in-out;
+}
+.tab-content.active { display: block; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Forms */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.input-label {
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: black;
+}
+
+.input-field {
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid black;
+}
+.input-field:focus {
+    outline: none;
+    box-shadow: 0 0 8px rgba(74,143,68,0.7);
+}
+
+.action-btn {
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.action-btn.primary {
+    background: linear-gradient(90deg, #4caf50, #2f6d2a);
+}
+.action-btn.danger {
+    background: linear-gradient(90deg, #d32f2f, #8b0000);
+}
+.action-btn:hover { transform: scale(1.03); }
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper .input-field {
+    width: 100%;
+    padding-right: 36px;
+}
+
+.password-wrapper .toggle-password {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
     .profile-layout {
-        display: flex;
-        gap: 30px;
-        flex-wrap: wrap;
-    }
-
-    .profile-overview {
-        flex: 1;
-        min-width: 280px;
-        background: rgba(255,255,255,0.08);
-        border-radius: 18px;
-        padding: 25px;
-        text-align: center;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-        backdrop-filter: blur(12px);
-        color: black;
-    }
-
-    .profile-avatar {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        margin-bottom: 15px;
-        border: 3px solid #4caf50;
-        object-fit: cover;
-    }
-
-    .user-name {
-        font-size: 1.4rem;
-        font-weight: 600;
-        margin-bottom: 5px;
-    }
-    .user-role {
-        font-size: 0.9rem;
-        color: #bbb;
-        margin-bottom: 20px;
-    }
-
-    .stats {
-        display: grid;
-        gap: 15px;
-    }
-
-    .stat-card {
-        background: rgba(255,255,255,0.1);
-        padding: 15px;
-        border-radius: 12px;
-        text-align: left;
-    }
-    .stat-card h3 {
-        font-size: 1rem;
-        margin-bottom: 5px;
-        font-weight: 500;
-    }
-    .stat-card p {
-        font-size: 1.2rem;
-        font-weight: bold;
-    }
-
-    /* Right Side (Tabs & Forms) */
-    .profile-settings {
-        flex: 2;
-        min-width: 400px;
-        background: rgba(255,255,255,0.08);
-        border-radius: 18px;
-        padding: 25px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-        backdrop-filter: blur(12px);
-    }
-
-    .tabs {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-    }
-    .tab-btn {
-        padding: 10px 18px;
-        border-radius: 10px;
-        border: none;
-        cursor: pointer;
-        background: rgba(255,255,255,0.1);
-        color: black;
-        font-weight: 500;
-        transition: all 0.3s;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-    }
-    .tab-btn.active, .tab-btn:hover {
-        background: linear-gradient(90deg, #4caf50, #2f6d2a);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-        color: white;
-    }
-
-    .tab-content {
-        display: none;
-        animation: fadeIn 0.4s ease-in-out;
-    }
-    .tab-content.active { display: block; }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Forms */
-    .form-container {
-        display: flex;
         flex-direction: column;
-        gap: 15px;
-    }
-
-    .input-label {
-        font-size: 14px;
-        margin-bottom: 5px;
-        color: black;
-    }
-
-    .input-field {
-        padding: 12px;
-        border-radius: 10px;
-        font-size: 15px;
-        background: rgba(255,255,255,0.2);
-        border-color: black;
-        
-    }
-    .input-field:focus {
-        outline: none;
-        box-shadow: 0 0 10px rgba(74,143,68,0.7);
-    }
-
-    .action-btn {
-        padding: 12px;
-        border-radius: 10px;
-        border: none;
-        color: white;
-        font-weight: bold;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-    .action-btn.primary {
-        background: linear-gradient(90deg, #4caf50, #2f6d2a);
-    }
-    .action-btn.danger {
-        background: linear-gradient(90deg, #d32f2f, #8b0000);
-    }
-    .action-btn:hover { transform: scale(1.03); }
-
-    .password-wrapper {
-        position: relative;
-        display: flex;
         align-items: center;
     }
-
-    .password-wrapper .input-field {
-        width: 100%;
-        padding-right: 40px;
+    .profile-overview {
+        margin-right: 0;
+        max-width: 260px;
+        padding: 18px;
     }
-
-    .password-wrapper .toggle-password {
-        position: absolute;
-        right: 10px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 18px;
-        color: white;
+    .profile-settings {
+        min-width: 300px;
+        padding: 18px;
+        margin-top: 20px;
     }
+    .profile-avatar {
+        width: 90px;
+        height: 90px;
+    }
+    .user-name { font-size: 1.1rem; }
+    .user-role { font-size: 0.8rem; }
+}

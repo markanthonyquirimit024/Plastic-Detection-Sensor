@@ -32,8 +32,7 @@ Route::get('/', function () {
 | Captcha Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/captcha', [CaptchaController::class, 'showCaptcha'])->name('captcha.page');
-Route::get('/captcha-refresh', [CaptchaController::class, 'refreshCaptcha'])->name('captcha.show');
+Route::get('/captcha', [CaptchaController::class, 'showCaptcha'])->name('captcha.show');
 Route::post('/captcha-verify', [CaptchaController::class, 'verifyCaptcha'])->name('captcha.verify');
 
 /*

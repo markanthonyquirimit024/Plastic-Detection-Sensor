@@ -1,89 +1,155 @@
+/* ----------------- Body and Container ----------------- */
+body {
+    font-family: 'Montserrat', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #ffffff;
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding-bottom: 3rem;
+    padding-top: 20px; /* top spacing for fixed navbar */
+}
+
+.container > .mb-4 {
+    text-align: center;       
+    margin-bottom: 2rem;
+}
+
+.container > .mb-4 h1 {
+    font-size: 2.2rem;       
+    font-weight: 700;
+    color: #212529;            
+    margin-bottom: 0.3rem;
+}
+
+.container > .mb-4 p {
+    font-size: 1rem;           
+    color: #6c757d;            
+    margin-bottom: 0;
+}
+
+/* Responsive adjustments for centered title */
+@media (max-width: 768px) {
+    .container > .mb-4 h1 {
+        font-size: 1.8rem;
+    }
+
+    .container > .mb-4 p {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .container > .mb-4 h1 {
+        font-size: 1.6rem;
+    }
+
+    .container > .mb-4 p {
+        font-size: 0.85rem;
+    }
+}
+
+
+.container {
+    padding: 20px;
+    margin-top: 0; /* align top */
+    max-width: 1200px;
+}
+
+/* ----------------- User Table Card ----------------- */
 #usertable {
-  background: #ffffff;
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  margin-top: 150px;
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 20px;
+    margin: 0 auto; /* center horizontally */
+    width: 100%;
 }
 
-h1 {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20px;
+/* ----------------- Table Responsiveness ----------------- */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
 }
 
+/* ----------------- Table Styling ----------------- */
 .table {
-  border-radius: 12px;
-  overflow: hidden;
+    border-radius: 12px;
+    overflow: hidden;
 }
 
 .table thead {
-  background: linear-gradient(90deg, #2193b0, #6dd5ed);
-  color: white;
+    background: linear-gradient(90deg, #2193b0, #6dd5ed);
+    color: white;
 }
 
 .table tbody tr:hover {
-  background-color: rgba(33, 147, 176, 0.1);
-  transition: 0.2s;
+    background-color: rgba(33, 147, 176, 0.1);
+    transition: 0.2s;
 }
 
+/* ----------------- Buttons ----------------- */
 .btn-gradient {
-  background: linear-gradient(90deg, #4facfe, #00f2fe);
-  color: white !important;
-  font-weight: 600;
-  transition: all 0.3s ease;
+    color: white !important;
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
+
 .btn-gradient:hover {
-  filter: brightness(1.1);
-  transform: translateY(-2px);
+    filter: brightness(1.1);
+    transform: translateY(-2px);
 }
 
 .btn-primary {
-  background: linear-gradient(90deg, #2193b0, #6dd5ed);
-  border: none;
-  font-weight: bold;
-  padding: 10px 18px;
-  border-radius: 8px;
+    background: linear-gradient(90deg, #047500, #ffffffcb);
+    border: none;
+    font-weight: bold;
+    padding: 10px 18px;
+    border-radius: 8px;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(90deg, #1a82a2, #5cc8db);
+    background: linear-gradient(90deg, #000000, #000000);
 }
 
 .btn-info {
-  background: linear-gradient(90deg, #36d1dc, #5b86e5);
-  border: none;
+    background: linear-gradient(90deg, #36d1dc, #5b86e5);
+    border: none;
 }
 
 .btn-danger {
-  background: linear-gradient(90deg, #ff4b2b, #ff416c);
-  border: none;
+    background: linear-gradient(90deg, #ff4b2b, #ff416c);
+    border: none;
 }
 
 .btn-info:hover,
 .btn-danger:hover {
-  opacity: 0.9;
+    opacity: 0.9;
 }
 
+/* ----------------- Modal ----------------- */
 .modal-content {
-  border-radius: 15px;
-  border: none;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    background-color: #000000be;
+    color: white;
 }
 
+/* ----------------- Toast ----------------- */
 .toast {
-  border-radius: 10px;
+    border-radius: 10px;
 }
 
+/* ----------------- Password Wrapper ----------------- */
 .password-wrapper {
     position: relative;
     display: inline-block;
     width: 100%;
-  }
-  .password-wrapper input {
+}
+
+.password-wrapper input {
     padding-right: 40px;
-  }
-  .password-wrapper .toggle-password {
+}
+
+.password-wrapper .toggle-password {
     position: absolute;
     right: 10px;
     top: 50%;
@@ -92,34 +158,73 @@ h1 {
     border: none;
     cursor: pointer;
     font-size: 18px;
-  }
+}
 
-
-
-
-  .edit-modal {
-  backdrop-filter: blur(12px);
-  border-radius: 15px;
-  border: none;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+/* ----------------- Edit Modal ----------------- */
+.edit-modal {
+    backdrop-filter: blur(12px);
+    border-radius: 15px;
+    border: none;
+    background-color: #000000be;
+    color: white;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
 }
 
 .edit-modal .modal-header {
-  background: linear-gradient(90deg, #36d1dc, #5b86e5);
-  color: white;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
+    color: white;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
 }
 
 .edit-modal .modal-title {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .edit-modal .btn-primary {
-  background: linear-gradient(90deg, #36d1dc, #5b86e5);
-  border: none;
+    border: none;
 }
 
 .edit-modal .btn-primary:hover {
-  opacity: 0.9;
+    opacity: 0.9;
+}
+
+/* ----------------- Responsive Adjustments ----------------- */
+@media (max-width: 1200px) {
+    #usertable {
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+}
+
+@media (max-width: 992px) {
+    #usertable {
+        margin: 0 auto;
+        padding: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    #usertable {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .table-responsive {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 576px) {
+    #usertable {
+        padding: 10px;
+    }
+
+    .password-wrapper input {
+        padding-right: 35px;
+    }
+
+    .password-wrapper .toggle-password {
+        font-size: 16px;
+    }
 }

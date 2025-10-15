@@ -1,135 +1,170 @@
 /* Global */
 body {
-    font-family: 'Poppins', sans-serif;
-    background: #f8f9fa;
-    min-height: 100vh;
-    overflow-x: hidden;
-    padding-bottom: 3rem;
+  font-family: 'Montserrat', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: #f8f9fa;
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding-bottom: 3rem;
+  box-sizing: border-box;
 }
 
 /* Header */
 header {
-    text-align: center;
-    color: black;
-    margin-bottom: 2rem;
+  text-align: center;
+  color: black;
+  margin-bottom: 2rem;
 }
 header h2 {
-    font-weight: 700;
-    font-size: 2rem;
-    letter-spacing: 1px;
-    color:  black;
+  font-weight: 700;
+  font-size: 2rem;
+  letter-spacing: 1px;
+  color: black;
 }
 header hr {
-    width: 80px;
-    border: 2px solid rgba(255,255,255,0.25);
-    margin: 10px auto;
-    border-radius: 2px;
+  width: 80px;
+  border: 2px solid rgba(255,255,255,0.25);
+  margin: 10px auto;
+  border-radius: 2px;
 }
 
 /* Cards */
 .card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-.card:hover {
-    box-shadow: 0 10px 28px rgba(15, 119, 2, 0.658);
-}
+
 .card-title {
-    font-weight: 600;
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    color: #f1f5f9;
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: #f1f5f9;
 }
 .stat-number {
-    font-size: 2rem;
-    font-weight: 700;   
-    color: #34d399;
+  font-size: 2rem;
+  font-weight: 700;   
+  color: #34d399;
 }
 .text-highlight {
-    color: #22c55e;
+  color: #22c55e;
 }
 
 /* Chart Card */
 .chart-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(12px);
-    border-radius: 20px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-    padding: 2rem;
-    margin-top: 2.5rem;
-    transition: transform 0.2s ease;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  padding: 2rem;
+  margin-top: 2.5rem;
+  transition: transform 0.2s ease;
 }
 .chart-card:hover {
-    transform: scale(1.02);
+  transform: scale(1.02);
 }
 
 /* Calendar */
 .calendar-container {
-    background: #10b981;
-    backdrop-filter: blur(14px);
-    border-radius: 20px;
-    padding: 30px;
-    margin-top: 3rem;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  background: #10b981;
+  backdrop-filter: blur(14px);
+  border-radius: 20px;
+  padding: 30px;
+  margin-top: 3rem;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
 }
 .calendar-title {
-    font-size: 1.6rem;
-    font-weight: 700;
-    margin-bottom: 20px;
-    text-align: center;
-    color: #d1fae5;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #d1fae5;
 }
 .calendar-table {
-    width: 100%;
-    text-align: center;
-    background: rgba(255,255,255,0.9);
-    color: #111;
-    border-radius: 12px;
-    border-collapse: collapse;
-    overflow: hidden;
+  width: 100%;
+  text-align: center;
+  background: rgba(255,255,255,0.9);
+  color: #111;
+  border-radius: 12px;
+  border-collapse: collapse;
+  overflow: hidden;
 }
 .calendar-table th {
-    background: #10b981;
-    color: #fff;
-    font-weight: 600;
+  background: #10b981;
+  color: #fff;
+  font-weight: 600;
 }
 .calendar-table th, 
 .calendar-table td {
-    padding: 14px;
-    border: 1px solid #e5e7eb;
-    font-size: 0.95rem;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  font-size: 0.95rem;
 }
 .calendar-table td {
-    transition: background 0.2s ease, transform 0.2s ease;
-    cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
 }
 .calendar-table td:hover {
-    background: #bbf7d0;
-    transform: scale(1.05);
-    border-radius: 6px;
+  background: #bbf7d0;
+  transform: scale(1.05);
+  border-radius: 6px;
 }
 
 /* Hover Popup (Tooltip) */
 #hover-popup {
-    display: none;
-    position: absolute;
-    background: rgba(255,255,255,0.95);
-    color: #111;
-    padding: 12px 15px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 500;
-    pointer-events: none;
-    z-index: 9999;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-    animation: fadeIn 0.2s ease-in-out;
+  display: none;
+  position: absolute;
+  background: rgba(255,255,255,0.95);
+  color: #111;
+  padding: 12px 15px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 9999;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+  animation: fadeIn 0.2s ease-in-out;
 }
 
 /* Animations */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ================= Dashboard Layout ================= */
+.dashboard-content {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Desktop: charts and calendar side by side */
+.chart-container,
+.stats-container,
+.calendar-container {
+  flex: 1 1 45%;
+}
+
+/* ================= Responsive: iPad Mini and smaller ================= */
+@media (max-width: 768px) {
+  .chart-container,
+  .stats-container,
+  .calendar-container {
+    flex: 1 1 100%; /* full width */
+    max-width: 700px; /* optional max width */
+  }
+
+  .calendar-container {
+    margin-top: 20px; /* spacing below charts */
+  }
+}
+
+/* Small phones: full width */
+@media (max-width: 480px) {
+  .chart-container,
+  .stats-container,
+  .calendar-container {
+    max-width: 100%;
+  }
 }

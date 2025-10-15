@@ -1,6 +1,10 @@
+/* ========================
+   DATA EXPLORER PAGE STYLE
+   ======================== */
+
 /* General Page */
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Montserrat', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background: #f8f9fa; /* same as dashboard */
   color: #212529;
   min-height: 100vh;
@@ -11,7 +15,7 @@ body {
 
 .container {
   min-height: 100vh;
-  padding-bottom: 50px; /* ✅ ensures space for bottom content */
+  padding-bottom: 50px; /* ensures space for bottom content */
 }
 
 /* Wrapper full screen */
@@ -27,80 +31,139 @@ body {
 /* Header */
 header {
   margin-bottom: 2rem;
-  text-align: left;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
+
 header h1 {
   font-weight: 700;
   font-size: 2rem;
   color: black;
+  margin: 0 auto;
 }
+
 header p {
   font-size: 1rem;
   color: #6c757d;
+  margin-top: 0.5rem;
 }
+
 header hr {
   width: 80px;
   border: 2px solid #d1e7dd;
-  margin: 12px 0;
+  margin: 12px auto;
   border-radius: 2px;
 }
 
-/* Card style */
-.card {
-  background: #ffffff;
+/* ========================
+   SEARCH & FILTER CARD
+   ======================== */
+.card.mb-4 {
+  border: 1px solid #00000036; 
   border-radius: 18px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: none;
+}
+
+.card.mb-4 .card-body {
+  padding: 1.5rem;
+}
+
+/* Form inside card */
+#filterForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;                /* space between inputs */
+}
+
+/* Form columns */
+#filterForm .col-md-3,
+#filterForm .col-md-2 {
+  flex: 1;                  /* take available space */
+  min-width: 120px;         /* avoid being too small */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Labels */
+#filterForm label {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #212529;
+}
+
+/* Inputs */
+#filterForm input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  outline: none;
+  background-color: #fff;
+}
+
+/* Button */
+#filterForm button {
+  width: 100%;
+  padding: 0.55rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  background-color: #198754;
   border: none;
-  
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
+
+#filterForm button:hover {
+  background-color: #146c43;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #filterForm {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  #filterForm .col-md-3,
+  #filterForm .col-md-2 {
+    min-width: 100%;
+  }
+}
+
+/* ========================
+   CARD STYLES - MODIFIED
+   ======================== */
+.card {      /* light grey background */
+  border-radius: 18px;
+  box-shadow: none;           /* remove shadow */
+  transition: transform 0.2s ease;
+   border: 1px solid #00000036;             /* remove border */
+}
+
 .card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+  box-shadow: none;           /* no shadow on hover */
 }
+
+/* Optional: adjust card-body padding if needed */
+.card .card-body {
+  padding: 1.5rem;
+}
+
+/* Card Title */
 .card-title {
   font-weight: 600;
   font-size: 1.2rem;
   margin-bottom: 0.5rem;
 }
 
-/* Search Box (inside card) */
-.search-box {
-  background: #ffffff;
-  border: 1px solid #dee2e6;
-  border-radius: 12px;
-  padding: 0.8rem 1rem;
-  display: flex;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  gap: 10px;
-}
-.search-box input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: #212529;
-  font-size: 1rem;
-}
-.search-box input::placeholder {
-  color: #6c757d;
-}
-.search-box button {
-  background-color: #198754;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 10px;
-  font-weight: 600;
-  color: white;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.search-box button:hover {
-  background-color: #146c43;
-}
-
-/* Table */
+/* ========================
+   TABLE
+   ======================== */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -108,6 +171,7 @@ table {
   border-radius: 12px;
   overflow: hidden;
   background-color: #fff;
+  border: 1px solid #00000036; /* border-1 applied */
 }
 thead {
   background: #d1e7dd;
@@ -122,7 +186,9 @@ tbody tr:hover {
   background: #f8f9fa;
 }
 
-/* Status Labels */
+/* ========================
+   STATUS LABELS
+   ======================== */
 .status-pill {
   padding: 4px 12px;
   border-radius: 10px;
@@ -143,7 +209,9 @@ tbody tr:hover {
   color: #856404;
 }
 
-/* Buttons */
+/* ========================
+   BUTTONS
+   ======================== */
 .btn {
   display: inline-block;
   cursor: pointer;
@@ -162,7 +230,9 @@ tbody tr:hover {
 .btn-blue { background-color: #0dcaf0; color: white; }
 .btn-blue:hover { background-color: #0aa2c0; }
 
-/* Responsive */
+/* ========================
+   RESPONSIVE
+   ======================== */
 @media (max-width: 768px) {
   header h1 {
     font-size: 1.6rem;

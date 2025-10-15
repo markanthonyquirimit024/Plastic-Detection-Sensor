@@ -9,7 +9,7 @@
     <style>
       /* General styling */
    body {
-  background: linear-gradient(135deg, #0d0d0d, #1a3d1f);
+background: linear-gradient(135deg, #ffffff, #4caf50);
   background-position: center;
   display: flex;
   justify-content: center;
@@ -79,7 +79,7 @@
         border-radius: 8px;
         font-size: 16px;
         background: rgba(255, 255, 255, 0.3);
-        color: white;
+        color: black;
         outline: none;
         transition: 0.3s;
         box-shadow: inset 0px 0px 5px rgba(255, 255, 255, 0.3);
@@ -148,7 +148,7 @@
   <div class="login-container">
     <!-- Circular Logo -->
     <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo">
-    <h2 style="color: white;">LOGIN</h2>
+    <h2 style="color: black;">LOGIN</h2>
 
     <!--Success Message-->
     <x-success-message/>
@@ -156,7 +156,7 @@
     <!-- Error Validation -->
     <x-validation-errors/>
 
-    <p style="color: white;">Enter your credentials</p>
+    <p style="color: black;">Enter your credentials</p>
     <form id="login-form" method="POST" action="{{ route('login') }}">
       @csrf
       <input type="email" id="email" name="email" class="input-field" placeholder="Email" required autofocus>
@@ -201,7 +201,7 @@
         if (failedAttempts >= 3) {
           // Redirect to captcha page after 3 failed attempts
           alert("Too many failed attempts! Redirecting to captcha verification.");
-          window.location.href = "{{ route('captcha.page') }}";
+          window.location.href = "{{ route('captcha.show') }}";
         }
 
         event.preventDefault(); // Stop form submission
