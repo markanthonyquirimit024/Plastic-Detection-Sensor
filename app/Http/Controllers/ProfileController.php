@@ -72,9 +72,7 @@ public function change_password(Request $request)
     $user->password = Hash::make($request->password);
     $user->save();
 
-    return redirect()
-        ->route('profile.edit')
-        ->with('success', 'Password updated successfully!');
+    return redirect()->route('profile.edit')->with('success', 'Password updated successfully!');
 }
 
 

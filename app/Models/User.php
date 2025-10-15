@@ -23,9 +23,9 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
 
-    const ADM = 'ADM';
-    const SVP = 'ANAL';                                                                                
-    const CST = 'CUST';
+    const ADM = 'Admin';
+    const SVP = 'Analyst';                                                                                
+    const CST = 'Customer';
 
     protected $fillable = [
         'first_name',

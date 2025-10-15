@@ -135,7 +135,7 @@ onValue(logsRef, (snapshot) => {
                     id: time+"-"+date,
                     Date: date,
                     Time: time,
-                    Location: record.location || "Unknown",
+                    Location: record.location || "Main Gate",
                     Type: record.type || "Plastic",
                     Status: record.status || "Detected",
                     User: record.user || "Admin"

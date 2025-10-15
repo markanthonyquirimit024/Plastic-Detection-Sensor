@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\DB;
 
 class LoginController extends Controller
 {
@@ -41,6 +42,8 @@ class LoginController extends Controller
                 Auth::logout();
                 return Redirect::route('2fa.index');  // Redirecting to the 2FA verification page
             }
+            
+            $this->createUserSession($request, $user);
 
             // ✅ Redirect to the dashboard if everything is fine
             return Redirect::route('dashboard');
@@ -61,11 +64,21 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
-        // Log out the user and invalidate session
+        $userSessionId = session('user_session_id');
+
+        if ($userSessionId) {
+        DB::table('user_sessions')
+            ->where('id', $userSessionId)
+            ->update([
+                'logout_time' => now()
+            ]);
+        }
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return Redirect::to('/');
+
+        return redirect('/');
     }
 
     public function verifyCaptcha(Request $request)
@@ -97,6 +110,23 @@ class LoginController extends Controller
 
         // Redirect to the dashboard if everything is okay
         return redirect()->route('dashboard');
+    }
+
+    protected function createUserSession(Request $request, $user)
+    {
+        $sessionId = DB::table('user_sessions')->insertGetId([
+            'user_id' => $user->id,
+            'login_time' => now(),
+            'ip_address' => $request->ip(),
+            'user_agent' => substr($request->userAgent(), 0, 500),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        session(['user_session_id' => $sessionId]);
+
+        $user->last_login = now();
+        $user->save();
     }
 }
 

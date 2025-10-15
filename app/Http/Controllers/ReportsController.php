@@ -18,8 +18,8 @@ class ReportsController extends Controller
     public function index()
     {
         $user = Auth::user();
-        // $analysts = User::orderBy('id','asc')->paginate(10);
-        return view('reports', compact('user'));      
+        $firebaseConfig = config('services.firebase');
+        return view('reports', compact('user','firebaseConfig'));      
     }
 
     /**

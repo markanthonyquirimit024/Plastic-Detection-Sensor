@@ -73,12 +73,12 @@
         <!-- Summary Cards -->
         <div class="row g-4 mb-4">
             @auth
-            @if(Auth::user()->utype === 'ADM')
+            @if(Auth::user()->utype === 'Admin')
             <div class="col-12 col-md-6">
                 <div class="card border-1 h-100 text-center">
                     <div class="card-body d-flex flex-column justify-content-center">
                         <h6>Total Users</h6>
-                        <h3 class="fw-bold text-success">{{ $userCount ?? 0 }}</h3>
+                        <h3 class="fw-bold text-success">{{ $totalUsers }}</h3>
                     </div>
                 </div>
             </div>
@@ -88,7 +88,7 @@
             <div class="col-12 col-md-6">
                 <div class="card border-1 h-100 text-center">
                     <div class="card-body d-flex flex-column justify-content-center">
-                        <h6 class="text-muted">Total Button Pressed</h6>
+                        <h6 class="text-muted">Total Confirmed Plastic Detected</h6>
                         <h3 id="plasticCount" class="fw-bold text-danger">0</h3>
                     </div>
                 </div>
@@ -146,22 +146,14 @@
 
 <script>
 function initializeDashboard() {
-    const firebaseConfig = {
-        apiKey: "AIzaSyDx7HErgazhqZq-rzJIM-4nFhMUA5byDzY",
-        authDomain: "plastic-sensor.firebaseapp.com",
-        databaseURL: "https://plastic-sensor-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "plastic-sensor",
-        storageBucket: "plastic-sensor.appspot.com",
-        messagingSenderId: "973658571653",
-        appId: "1:973658571653:web:ba344e62c400e993f5baec"
-    };
-
-    if (typeof firebase === "undefined" || !firebase.apps.length) {
-        console.error("Firebase SDK did not load!");
-        return;
-    }
-
+    const firebaseConfig = @json($firebaseConfig);
+    if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
+    }
+    if (typeof firebase === "undefined" || !firebase.apps.length) {
+    console.error("Firebase SDK did not load or initialization failed!");
+    return;
+    }
     const database = firebase.database();
 
     // Chart setup

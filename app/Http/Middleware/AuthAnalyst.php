@@ -16,7 +16,7 @@ class AuthAnalyst
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::user()->utype === 'ANAL')
+        if (Auth::user()->utype === 'Analyst')
         {
             return $next($request);
         }

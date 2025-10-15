@@ -52,7 +52,7 @@
                         <td>
                             <!-- Edit Button -->
                             <button class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#editUserModal{{ $analyst->id }}">
-                                <i class="fa fa-edit me-1"></i>Edit
+                                ✏️ Edit
                             </button>
 
                             <!-- Edit Modal -->
@@ -61,7 +61,7 @@
                                     <div class="modal-content edit-modal">
                                         <div class="modal-header">
                                             <h5 class="modal-title"><i class="fas fa-user-edit"></i> Edit Analyst</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            <button type="button" class="btn-close bg-light me-1" data-bs-dismiss="modal"></button>
                                         </div>
                                         <form action="{{ route('admin.edit-user', $analyst->id) }}" method="POST" class="edit-user-form">
                                             @csrf
@@ -114,11 +114,11 @@
                             </div>
 
                             <!-- Delete Button -->
-                            <form action="{{ route('admin.delete-user', $analyst->id) }}" method="POST" class="d-inline">
+                            <form action="{{ route('admin.delete-user', $analyst->id) }}" method="POST" class="d-inline delete-form">
                                 @csrf
                                 @method('DELETE')
-                                <button class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure want to delete this account?')">
-                                    <i class="fa fa-trash me-1"></i>Delete
+                                <button type="button" class="btn btn-outline-danger btn-sm delete-btn">
+                                    🗑️ Delete
                                 </button>
                             </form>
                         </td>
@@ -142,7 +142,7 @@
         <div class="modal-content p-3">
             <div class="modal-header">
                 <h5 class="modal-title" id="popupFormLabel">Create Analyst</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close bg-light" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="register-form" action="{{ route('admin.create-analyst') }}" method="POST">
@@ -196,6 +196,139 @@
 
 <!-- Password Toggle and Checklist JS -->
 <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const editForms = document.querySelectorAll('.edit-user-form');
+
+    editForms.forEach(form => {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            Swal.fire({
+                title: 'Confirm Update',
+                text: 'Are you sure you want to update this analyst?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, update it',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const formData = new FormData(form);
+
+                    fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: formData
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Updated!',
+                                text: 'Analyst information has been updated successfully.',
+                                confirmButtonColor: '#0d6efd'
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            return response.json().then(data => {
+                                throw new Error(data.message || 'An error occurred.');
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.message,
+                            confirmButtonColor: '#d33'
+                        });
+                    });
+                }
+            });
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const form = this.closest('.delete-form');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This account will be permanently deleted.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+
+document.getElementById('register-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to create this analyst?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#198754',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, create it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = e.target;
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Analyst account created successfully!',
+                        confirmButtonColor: '#198754'
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Something went wrong');
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message,
+                    confirmButtonColor: '#d33'
+                });
+            });
+        }
+    });
+});
+
 document.querySelectorAll(".toggle-password").forEach(button => {
     button.addEventListener("click", function() {
         const field = document.getElementById(this.dataset.target);
@@ -227,44 +360,91 @@ function updateChecklist(id, valid) {
 
 // Form Submit Validation
 document.getElementById("register-form").addEventListener("submit", function(event) {
-    const password = passwordField.value;
+    const password = document.getElementById("password").value;
     const confirm = document.getElementById("password_confirmation").value;
 
+    // ✅ Check password requirements
     if (!Object.values(checklist).every(Boolean)) {
-        alert("Password does not meet all requirements.");
         event.preventDefault();
-    } else if (password !== confirm) {
-        alert("Passwords do not match!");
+        Swal.fire({
+            icon: 'warning',
+            title: 'Password Error',
+            text: 'Password does not meet all requirements.',
+            confirmButtonColor: '#d33'
+        });
+    } 
+    // ❌ Check if passwords match
+    else if (password !== confirm) {
         event.preventDefault();
+        Swal.fire({
+            icon: 'error',
+            title: 'Password Mismatch',
+            text: 'Passwords do not match!',
+            confirmButtonColor: '#d33'
+        });
     }
 });
 
 // Edit Analyst Password Validation
-document.querySelectorAll(".edit-user-form").forEach(form => {
-    const userId = form.querySelector("[name=password]").id.split("_").pop();
-    const passwordInput = document.getElementById(`edit_password_${userId}`);
-    const confirmInput = document.getElementById(`edit_password_confirmation_${userId}`);
-    const checklistEl = document.getElementById(`edit-password-checklist-${userId}`);
-    const requirements = { length: /.{8,}/, lowercase: /[a-z]/, uppercase: /[A-Z]/, number: /\d/, special: /[@$!%*?&]/ };
+document.addEventListener("DOMContentLoaded", () => {
+    const requirements = {
+        length: /.{8,}/,
+        lowercase: /[a-z]/,
+        uppercase: /[A-Z]/,
+        number: /\d/,
+        special: /[@$!%*?&]/
+    };
 
-    passwordInput.addEventListener("input", function() {
-        if (this.value) {
-            checklistEl.style.display = "block";
-            checklistEl.querySelectorAll("li").forEach(item => {
+    document.querySelectorAll(".edit-user-form").forEach(form => {
+        const passwordInput = form.querySelector("[name='password']");
+        const confirmInput = form.querySelector("[name='password_confirmation']");
+        const checklistEl = form.querySelector("ul[id^='edit-password-checklist']");
+        const checklistItems = checklistEl.querySelectorAll("li");
+
+        // ✅ Show/hide and validate password requirements
+        passwordInput.addEventListener("input", () => {
+            const value = passwordInput.value;
+            checklistEl.style.display = value ? "block" : "none";
+
+            checklistItems.forEach(item => {
                 const key = item.className;
-                const valid = requirements[key].test(this.value);
-                item.style.color = valid ? "lime" : "red";
-                item.textContent = `${valid ? '✔' : '✖'} ${item.textContent.slice(2)}`;
+                const isValid = requirements[key].test(value);
+                item.style.color = isValid ? "lime" : "red";
+                item.textContent = `${isValid ? '✔' : '✖'} ${item.textContent.slice(2)}`;
             });
-        } else checklistEl.style.display = "none";
-    });
+        });
 
-    form.addEventListener("submit", function(event) {
-        if (passwordInput.value) {
-            const allValid = Object.values(requirements).every(r => r.test(passwordInput.value));
-            if (!allValid) { alert("New password does not meet all requirements."); event.preventDefault(); }
-            else if (passwordInput.value !== confirmInput.value) { alert("Passwords do not match."); event.preventDefault(); }
-        }
+        // 🛡️ SweetAlert validation on submit
+        form.addEventListener("submit", (event) => {
+            const newPassword = passwordInput.value.trim();
+            const confirmPassword = confirmInput.value.trim();
+
+            if (newPassword) {
+                const allValid = Object.entries(requirements).every(([_, regex]) => regex.test(newPassword));
+
+                if (!allValid) {
+                    event.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Invalid Password',
+                        text: 'New password does not meet all requirements.',
+                        confirmButtonColor: '#d33'
+                    });
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    event.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Password Mismatch',
+                        text: 'Passwords do not match.',
+                        confirmButtonColor: '#d33'
+                    });
+                    return;
+                }
+            }
+        });
     });
 });
 </script>
