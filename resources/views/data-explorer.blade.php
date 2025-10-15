@@ -47,20 +47,15 @@
             <div class="card-body position-relative">
                 <h5 class="fw-bold text-success mb-3">📊 Detected Records</h5>
 
-                <!-- Plastic Count Badge -->
-                <span id="plasticCount" class="position-absolute top-0 end-0 badge bg-success fs-6 m-3">
-                    Plastic: 0
-                </span>
-
                 <div class="table-responsive">
                     <table class="table align-middle table-hover mb-0" id="dataTable">
                         <thead class="table-success text-success">
                             <tr>
                                 <th>Date</th>
-                                <th>Time</th>
                                 <th>Location</th>
                                 <th>Type</th>
                                 <th>Status</th>
+                                <th>Count</th>
                                 <th>User</th>
                                 <th>Actions</th>
                             </tr>
@@ -86,160 +81,186 @@
 </div>
 
 <!-- Firebase & JS -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
-import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-database.js";
+<script>
+function initializeDataExplorer() {
+    // Firebase config from Laravel
+    const firebaseConfig = @json($firebaseConfig);
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDx7HErgazhqZq-rzJIM-4nFhMUA5byDzY",
-    authDomain: "plastic-sensor.firebaseapp.com",
-    databaseURL: "https://plastic-sensor-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "plastic-sensor",
-    storageBucket: "plastic-sensor.appspot.com",
-    messagingSenderId: "973658571653",
-    appId: "1:973658571653:web:ba344e62c400e993f5baec"
-};
+    // Initialize Firebase (compat)
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const database = firebase.database();
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+    // DOM Elements
+    const tableBody = document.getElementById('tableBody');
+    const prevBtn = document.getElementById('prevPage');
+    const nextBtn = document.getElementById('nextPage');
+    const pageInfo = document.getElementById('pageInfo');
+    const searchInput = document.getElementById('search');
+    const fromDate = document.getElementById('from-date');
+    const toDate = document.getElementById('to-date');
+    const filterForm = document.getElementById('filterForm');
 
-// DOM
-const tableBody = document.getElementById('tableBody');
-const prevBtn = document.getElementById('prevPage');
-const nextBtn = document.getElementById('nextPage');
-const pageInfo = document.getElementById('pageInfo');
-const searchInput = document.getElementById('search');
-const fromDate = document.getElementById('from-date');
-const toDate = document.getElementById('to-date');
-const typeSelect = document.getElementById('type');
-const filterForm = document.getElementById('filterForm');
+    // Data
+    let tableData = [];
+    let filteredData = [];
+    let currentPage = 1;
+    const itemsPerPage = 5;
 
-// Data
-window.tableData = [];
-let filteredData = [];
-let currentPage = 1;
-const itemsPerPage = 5;
+    // Format date to MM/DD/YYYY for display
+    function formatDate(dateStr) {
+        const parts = dateStr.split('-'); // ["YYYY","MM","DD"]
+        return `${parts[1]}/${parts[2]}/${parts[0]}`;
+    }
 
-// Fetch Firebase Data
-const logsRef = ref(db, 'logs/ButtonPress');
-onValue(logsRef, (snapshot) => {
-    const data = snapshot.val();
-    window.tableData = [];
+    // Fetch Firebase Data
+    const logsRef = database.ref('logs/ButtonPress');
+    logsRef.on('value', snapshot => {
+        const data = snapshot.val();
+        const grouped = {}; // Group by date+location+user+type+status
 
-    if(data) {
-        Object.keys(data).forEach(date => {
-            const logs = data[date];
-            Object.keys(logs).forEach(time => {
-                const record = logs[time];
-                window.tableData.push({
-                    id: time+"-"+date,
-                    Date: date,
-                    Time: time,
-                    Location: record.location || "Main Gate",
-                    Type: record.type || "Plastic",
-                    Status: record.status || "Detected",
-                    User: record.user || "Admin"
+        if (data) {
+            Object.keys(data).forEach(date => {
+                const logs = data[date];
+                Object.keys(logs).forEach(time => {
+                    const record = logs[time];
+                    const key = `${date}|${record.location || "Main Gate"}|${record.user || "Admin"}|${record.type || "Plastic"}|${record.status || "Detected"}`;
+                    if (!grouped[key]) {
+                        grouped[key] = {
+                            Date: formatDate(date),
+                            RawDate: date,
+                            Location: record.location || "Main Gate",
+                            User: record.user || "Admin",
+                            Type: record.type || "Plastic",
+                            Status: record.status || "Detected",
+                            Count: 1
+                        };
+                    } else {
+                        grouped[key].Count++;
+                    }
                 });
             });
-        });
-    }
+        }
 
-    filteredData = [...window.tableData];
-    currentPage = 1;
-    renderTable();
-});
-
-// Render Table
-function renderTable() {
-    const start = (currentPage-1) * itemsPerPage;
-    const end = start + itemsPerPage;
-    const paginated = filteredData.slice(start, end);
-
-    if(paginated.length === 0){
-        tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No results</td></tr>`;
-        pageInfo.textContent = '';
-        prevBtn.disabled = true;
-        nextBtn.disabled = true;
-        updatePlasticCount();
-        return;
-    }
-
-    tableBody.innerHTML = paginated.map(row => `
-        <tr data-id="${row.id}">
-            <td>${row.Date}</td>
-            <td>${row.Time}</td>
-            <td>${row.Location}</td>
-            <td><span class="badge ${row.Type==="Plastic"?"bg-success":"bg-warning text-dark"}">${row.Type}</span></td>
-            <td><span class="${row.Status==="Detected"?"text-success fw-semibold":"text-danger fw-semibold"}">${row.Status}</span></td>
-            <td>${row.User}</td>
-            <td>
-                <button class="btn btn-outline-info btn-sm rounded-3 viewBtn"><i class="bi bi-eye"></i> View</button>
-                <button class="btn btn-outline-danger btn-sm rounded-3 deleteBtn"><i class="bi bi-trash"></i> Delete</button>
-            </td>
-        </tr>
-    `).join('');
-
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-    prevBtn.disabled = currentPage === 1;
-    nextBtn.disabled = currentPage === totalPages;
-
-    updatePlasticCount();
-}
-
-// Update Plastic Count
-function updatePlasticCount() {
-    const count = filteredData.filter(r => r.Type === "Plastic").length;
-    document.getElementById('plasticCount').textContent = `Plastic: ${count}`;
-}
-
-// Pagination
-prevBtn.addEventListener('click', ()=> { if(currentPage>1){currentPage--; renderTable();} });
-nextBtn.addEventListener('click', ()=> { if(currentPage<Math.ceil(filteredData.length/itemsPerPage)){currentPage++; renderTable();} });
-
-// Filters
-filterForm.addEventListener('submit', (e)=>{
-    e.preventDefault();
-    const keyword = searchInput.value.toLowerCase();
-    const from = fromDate.value;
-    const to = toDate.value;
-    const type = typeSelect.value;
-
-    filteredData = window.tableData.filter(row=>{
-        let match = true;
-        if(keyword) match = match && (row.Location.toLowerCase().includes(keyword) || row.User.toLowerCase().includes(keyword));
-        if(from) match = match && row.Date >= from;
-        if(to) match = match && row.Date <= to;
-        if(type) match = match && row.Type === type;
-        return match;
+        tableData = Object.values(grouped);
+        filteredData = [...tableData];
+        currentPage = 1;
+        renderTable();
     });
-    currentPage = 1;
-    renderTable();
-});
 
-// Event Delegation for Actions
-tableBody.addEventListener('click', (e)=>{
-    const tr = e.target.closest('tr');
-    if(!tr) return;
-    const id = tr.dataset.id;
+    // Render Table
+    function renderTable() {
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const paginated = filteredData.slice(start, end);
 
-    if(e.target.closest('.viewBtn')){
-        const [time, date] = id.split("-");
-        window.location.href = `{{ route('reports') }}?date=${date}&time=${time}`;
+        if (paginated.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No results</td></tr>`;
+            pageInfo.textContent = '';
+            prevBtn.disabled = true;
+            nextBtn.disabled = true;
+            return;
+        }
+
+        tableBody.innerHTML = paginated.map(row => `
+            <tr data-date="${row.RawDate}">
+                <td>${row.Date}</td>
+                <td>${row.Location}</td>
+                <td><span class="badge ${row.Type==="Plastic"?"bg-success":"bg-warning text-dark"}">${row.Type}</span></td>
+                <td><span class="${row.Status==="Detected"?"text-success fw-semibold":"text-danger fw-semibold"}">${row.Status}</span></td>
+                <td>${row.Count}</td>
+                <td>${row.User}</td>
+                <td>
+                    <button class="btn btn-outline-info btn-sm rounded-3 viewBtn"><i class="bi bi-eye"></i> View</button>
+                    <button class="btn btn-outline-danger btn-sm rounded-3 deleteBtn"><i class="bi bi-trash"></i> Delete</button>
+                </td>
+            </tr>
+        `).join('');
+
+        const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages;
     }
 
-    if(e.target.closest('.deleteBtn')){
-        if(!confirm("Are you sure you want to delete this record?")) return;
-        const [time, date] = id.split("-");
-        remove(ref(db, `logs/ButtonPress/${date}/${time}`))
-        .then(()=>{
-            alert("Record deleted");
-            window.tableData = window.tableData.filter(r=>r.id!==id);
-            filteredData = filteredData.filter(r=>r.id!==id);
-            renderTable();
-        })
-        .catch(err => alert("Error deleting record: "+err));
-    }
-});
+    // Pagination
+    prevBtn.addEventListener('click', () => { if(currentPage>1){currentPage--; renderTable();} });
+    nextBtn.addEventListener('click', () => { if(currentPage<Math.ceil(filteredData.length/itemsPerPage)){currentPage++; renderTable();} });
+
+    // Filters
+    filterForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const keyword = searchInput.value.toLowerCase();
+        const from = fromDate.value;
+        const to = toDate.value;
+
+        filteredData = tableData.filter(row => {
+            let match = true;
+            if(keyword) match = match && (row.Location.toLowerCase().includes(keyword) || row.User.toLowerCase().includes(keyword));
+            if(from) match = match && row.RawDate >= from;
+            if(to) match = match && row.RawDate <= to;
+            return match;
+        });
+
+        currentPage = 1;
+        renderTable();
+    });
+
+    // Event Delegation for Actions
+    tableBody.addEventListener('click', e => {
+        const tr = e.target.closest('tr');
+        if (!tr) return;
+        const date = tr.dataset.date;
+
+        if (e.target.closest('.viewBtn')) {
+            window.location.href = `{{ route('reports') }}?date=${date}`;
+        }
+
+        if (e.target.closest('.deleteBtn')) {
+            // SweetAlert2 confirmation
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `This will delete ALL records for ${date}!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Delete entire day from Firebase
+                    database.ref(`logs/ButtonPress/${date}`).remove()
+                        .then(() => {
+                            // Remove from local data
+                            tableData = tableData.filter(r => r.RawDate !== date);
+                            filteredData = filteredData.filter(r => r.RawDate !== date);
+                            renderTable();
+
+                            // Success notification
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: `All records for ${date} have been deleted.`,
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        })
+                        .catch(err => {
+                            // Error notification
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'There was an error deleting the records: ' + err,
+                                icon: 'error'
+                            });
+                        });
+                }
+            });
+        }
+    });
+}
+
+window.addEventListener('load', initializeDataExplorer);
 </script>
+
 @endsection
