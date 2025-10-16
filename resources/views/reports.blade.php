@@ -84,182 +84,135 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-database.js";
+<script>
+function initializeReport() {
+    // Firebase config from Laravel
+    const firebaseConfig = @json($firebaseConfig);
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDx7HErgazhqZq-rzJIM-4nFhMUA5byDzY",
-    authDomain: "plastic-sensor.firebaseapp.com",
-    databaseURL: "https://plastic-sensor-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "plastic-sensor",
-    storageBucket: "plastic-sensor.appspot.com",
-    messagingSenderId: "973658571653",
-    appId: "1:973658571653:web:ba344e62c400e993f5baec"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-// DOM Elements
-const reportBody = document.getElementById('reportBody');
-const totalReports = document.getElementById('totalReports');
-const successReports = document.getElementById('successReports');
-const prevBtn = document.getElementById('prevPage');
-const nextBtn = document.getElementById('nextPage');
-const pageInfo = document.getElementById('pageInfo');
-const dateFilter = document.getElementById('dateFilter');
-
-// Data
-window.tableData = [];
-let filteredData = [];
-let currentPage = 1;
-const itemsPerPage = 10;
-
-// Chart
-const ctx = document.getElementById('reportChart').getContext('2d');
-const chartData = { labels: [], success: [] };
-const chart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: chartData.labels,
-        datasets: [
-            { label: 'Successful Detections', data: chartData.success, backgroundColor: '#2d6a4f' }
-        ]
-    },
-    options: {
-        responsive: true,
-        plugins: { legend: { labels: { color: 'black' } } },
-        scales: { x: { ticks: { color: 'black' } }, y: { ticks: { color: 'black' } } }
+    // Initialize Firebase (compat version)
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
     }
-});
 
-// Firebase Data
-const logsRef = ref(db, 'logs/ButtonPress');
-onValue(logsRef, (snapshot) => {
-    const data = snapshot.val();
+    const database = firebase.database();
+
+    // DOM Elements
+    const reportBody = document.getElementById('reportBody');
+    const totalReports = document.getElementById('totalReports');
+    const successReports = document.getElementById('successReports');
+    const prevBtn = document.getElementById('prevPage');
+    const nextBtn = document.getElementById('nextPage');
+    const pageInfo = document.getElementById('pageInfo');
+    const dateFilter = document.getElementById('dateFilter');
+
+    // Data
     window.tableData = [];
-    let successCount = 0, totalCount = 0;
-    chartData.labels = []; chartData.success = [];
+    let filteredData = [];
+    let currentPage = 1;
+    const itemsPerPage = 10;
 
-    if (data) {
-        Object.keys(data).forEach(date => {
-            const logs = data[date];
-            let daySuccess = 0;
+    // Chart
+    const ctx = document.getElementById('reportChart').getContext('2d');
+    const chartData = { labels: [], success: [] };
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: chartData.labels,
+            datasets: [
+                { label: 'Successful Detections', data: chartData.success, backgroundColor: '#2d6a4f' }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { labels: { color: 'black' } } },
+            scales: { x: { ticks: { color: 'black' } }, y: { ticks: { color: 'black' } } }
+        }
+    });
 
-            Object.keys(logs).forEach(time => {
-                const status = logs[time];
-                if (status === 'Pressed') {
-                    totalCount++;
-                    successCount++;
-                    daySuccess++;
-                    window.tableData.push({
-                        Date: date,
-                        Time: time,
-                        Status: 'Success',
-                        Details: 'Plastic Detected'
-                    });
+    // Firebase Data (compat version)
+    database.ref('logs/ButtonPress').on('value', function(snapshot) {
+        const data = snapshot.val();
+        window.tableData = [];
+        let successCount = 0, totalCount = 0;
+        chartData.labels = []; chartData.success = [];
+
+        if (data) {
+            Object.keys(data).forEach(date => {
+                const logs = data[date];
+                let daySuccess = 0;
+
+                Object.keys(logs).forEach(time => {
+                    if (logs[time] === 'Pressed') {
+                        totalCount++;
+                        successCount++;
+                        daySuccess++;
+                        window.tableData.push({
+                            Date: date,
+                            Time: time,
+                            Status: 'Success',
+                            Details: 'Plastic Detected'
+                        });
+                    }
+                });
+
+                if (daySuccess > 0) {
+                    chartData.labels.push(date);
+                    chartData.success.push(daySuccess);
                 }
             });
 
-            if (daySuccess > 0) {
-                chartData.labels.push(date);
-                chartData.success.push(daySuccess);
-            }
-        });
+            filteredData = [...window.tableData];
+            currentPage = 1;
+            renderTable();
+        } else {
+            reportBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No data available</td></tr>`;
+        }
 
-        filteredData = [...window.tableData];
+        totalReports.textContent = totalCount;
+        successReports.textContent = successCount;
+        chart.data.labels = chartData.labels;
+        chart.data.datasets[0].data = chartData.success;
+        chart.update();
+    });
+
+    // Table Rendering
+    function renderTable() {
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const paginated = filteredData.slice(start, end);
+
+        reportBody.innerHTML = paginated.length
+            ? paginated.map(row => `<tr>
+                <td>${row.Date}</td>
+                <td>${row.Time}</td>
+                <td><span class="text-success">${row.Status}</span></td>
+                <td>${row.Details}</td>
+            </tr>`).join('')
+            : `<tr><td colspan="4" class="text-center text-muted">No results</td></tr>`;
+
+        const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages;
+    }
+
+    // Pagination Events
+    prevBtn.addEventListener('click', () => { if(currentPage>1){ currentPage--; renderTable(); } });
+    nextBtn.addEventListener('click', () => { 
+        const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+        if(currentPage<totalPages){ currentPage++; renderTable(); } 
+    });
+
+    // Date Filter Event
+    dateFilter.addEventListener('change', () => {
+        const selectedDate = dateFilter.value;
+        filteredData = selectedDate ? window.tableData.filter(r => r.Date === selectedDate) : [...window.tableData];
         currentPage = 1;
         renderTable();
-    } else {
-        reportBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No data available</td></tr>`;
-    }
-
-    totalReports.textContent = totalCount;
-    successReports.textContent = successCount;
-    chart.data.labels = chartData.labels;
-    chart.data.datasets[0].data = chartData.success;
-    chart.update();
-});
-
-// Table Rendering
-function renderTable() {
-    const start = (currentPage - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
-    const paginated = filteredData.slice(start, end);
-
-    if (paginated.length === 0) {
-        reportBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No results</td></tr>`;
-        pageInfo.textContent = '';
-        prevBtn.disabled = true;
-        nextBtn.disabled = true;
-        return;
-    }
-
-    reportBody.innerHTML = paginated.map(row => `
-        <tr>
-            <td>${row.Date}</td>
-            <td>${row.Time}</td>
-            <td><span class="text-success">${row.Status}</span></td>
-            <td>${row.Details}</td>
-        </tr>
-    `).join('');
-
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-    prevBtn.disabled = currentPage === 1;
-    nextBtn.disabled = currentPage === totalPages;
+    });
 }
 
-// Pagination Events
-prevBtn.addEventListener('click', () => {
-    if (currentPage > 1) {
-        currentPage--;
-        renderTable();
-    }
-});
-
-nextBtn.addEventListener('click', () => {
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    if (currentPage < totalPages) {
-        currentPage++;
-        renderTable();
-    }
-});
-
-// Date Filter Event
-dateFilter.addEventListener('change', () => {
-    const selectedDate = dateFilter.value;
-    filteredData = selectedDate
-        ? window.tableData.filter(row => row.Date === selectedDate)
-        : [...window.tableData];
-    currentPage = 1;
-    renderTable();
-});
+window.addEventListener('load', initializeReport);
 </script>
 
-<script>
-    // Export Excel
-    document.getElementById('exportExcel').addEventListener('click', () => {
-        if (!window.tableData.length) return alert("No data to export!");
-        const ws = XLSX.utils.json_to_sheet(window.tableData);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Reports");
-        XLSX.writeFile(wb, "Detection_Reports.xlsx");
-    });
-
-    // Export PDF
-    document.getElementById('exportPDF').addEventListener('click', () => {
-        const element = document.querySelector('.container');
-        html2canvas(element, { scale: 2 }).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-            const imgWidth = 210;
-            const pageHeight = 297;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-            pdf.save('Detection_Report.pdf');
-        });
-    });
-</script>
 @endsection

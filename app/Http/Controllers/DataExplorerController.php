@@ -18,8 +18,8 @@ class DataExplorerController extends Controller
     public function index()
     {
         $user = Auth::user();
-        // $analysts = User::orderBy('id','asc')->paginate(10);
-        return view('data-explorer', compact('user'));      
+        $firebaseConfig = config('services.firebase');
+        return view('data-explorer', compact('user','firebaseConfig'));      
     }
 
     /**
