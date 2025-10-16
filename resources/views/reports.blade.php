@@ -42,7 +42,7 @@
 
     <!-- Chart -->
     <div class="mt-5 chart-card">
-        <h5 class="mb-3 text-dark">Monthly Report Trends</h5>
+        <h5 class="mb-3 text-dark">Today's Report Trends</h5>
         <canvas id="reportChart" height="50"></canvas>
     </div>
 
@@ -50,7 +50,7 @@
     <!-- Report Table -->
     <div class="card-body  table-wrapper mt-5">
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5 class="mb-0 text-dark">Recent Records</h5>
+            <h5 class="mb-0 text-dark">Summarization Recent Records</h5>
             <!-- Date Filter -->
             <input type="date" id="dateFilter" class="form-control form-control-sm" style="max-width: 180px;">
         </div>

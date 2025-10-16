@@ -5,61 +5,37 @@
 <title>Dashboard</title>
 
 <style>
-/* Existing styles... */
-
 /* Responsive for iPad Mini only (768px) */
 @media (min-width: 768px) and (max-width: 991.98px) {
-    /* Make summary cards full width */
     .row.g-4.mb-4 > .col-12.col-md-6 {
         flex: 0 0 100%;
         max-width: 100%;
     }
-
-    /* Make chart and calendar stacked and full width */
     .row.g-4 > .col-12.col-md-8,
     .row.g-4 > .col-12.col-md-4 {
         flex: 0 0 100%;
         max-width: 100%;
     }
-
-    /* Chart height adjustment */
-    #weeklyPlasticChart {
+    #plasticChart {
         height: 350px !important;
     }
-
-    /* Calendar table full width and readable */
     #calendar-table {
         width: 100% !important;
         font-size: 0.85rem;
     }
-
-    /* Cards take full height and smaller padding */
     .card.h-100 {
         height: auto !important;
         min-height: 200px;
-        padding: 0.5rem; /* reduce internal spacing */
+        padding: 0.5rem;
     }
-
-    /* Reduce card body padding */
     .card-body {
         padding: 0.75rem !important;
     }
-
-    /* Add spacing between stacked elements */
     .row.g-4 > .col-12 {
         margin-bottom: 0.75rem;
     }
-
-    /* Optional: reduce header and title font sizes */
-    header h2 {
-        font-size: 1.5rem;
-    }
-    header p {
-        font-size: 0.9rem;
-    }
 }
 </style>
-
 
 <div class="dashboard-wrapper">
     <div class="container-fluid py-4 flex-grow-1 min-vh-100">
@@ -95,15 +71,27 @@
             </div>
         </div>
 
-        <!-- Charts and Calendar -->
+        <!-- Chart and Calendar -->
         <div class="row g-4">
             <!-- Chart -->
             <div class="col-12 col-md-8">
                 <div class="card border-1 h-100">
                     <div class="card-body d-flex flex-column">
-                        <h6 class="mb-3 fw-bold">Weekly Plastic Detected Trends</h6>
-                        <p class="text-muted fst-italic">Auto-updates from Firebase.</p>
-                        <canvas id="weeklyPlasticChart"></canvas>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h6 class="fw-bold mb-0">Plastic Detected Trends</h6>
+                                <p class="text-muted fst-italic mb-0">Auto-tallies reports from Firebase data.</p>
+                            </div>
+                            <div>
+                                <select id="trend-filter" class="form-select form-select-sm">
+                                    <option value="day">Daily</option>
+                                    <option value="week" selected>Weekly</option>
+                                    <option value="month">Monthly</option>
+                                    <option value="year">Yearly</option>
+                                </select>
+                            </div>
+                        </div>
+                        <canvas id="plasticChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -147,79 +135,131 @@
 <script>
 function initializeDashboard() {
     const firebaseConfig = @json($firebaseConfig);
-    if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-    }
-    if (typeof firebase === "undefined" || !firebase.apps.length) {
-    console.error("Firebase SDK did not load or initialization failed!");
-    return;
-    }
-    const database = firebase.database();
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    // Chart setup
-    const ctx = document.getElementById('weeklyPlasticChart').getContext('2d');
-    const weeklyPlasticChart = new Chart(ctx, {
+    const ctx = document.getElementById('plasticChart').getContext('2d');
+    const plasticChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: [],
             datasets: [{
-                label: 'Button Press Count',
+                label: 'Plastic Detected',
                 data: [],
                 borderColor: '#dc3545',
-                backgroundColor: 'rgba(220,53,69,0.2)',
+                backgroundColor: 'rgba(220,53,69,0.15)',
                 fill: true,
-                tension: 0.4
+                tension: 0.3,
+                borderWidth: 2,
+                pointRadius: 4
             }]
         },
         options: {
             responsive: true,
-            plugins: { legend: { labels: { color: '#333' } } },
-            scales: { x: { ticks: { color: '#333' } }, y: { beginAtZero: true, ticks: { color: '#333' } } }
+            plugins: { legend: { display: true } },
+            scales: {
+                x: { title: { display: true, text: 'Time Range' } },
+                y: { beginAtZero: true, title: { display: true, text: 'Plastic Count' } }
+            }
         }
     });
 
     let fullData = {};
-    database.ref('logs/ButtonPress').on('value', snapshot => {
+    db.ref('logs/ButtonPress').on('value', snapshot => {
         const data = snapshot.val() || {};
         let totalPresses = 0;
         let dailyCounts = {};
 
         Object.keys(data).forEach(date => {
-            const logs = data[date];
+            const logs = data[date] || {};
             const count = Object.values(logs).filter(v => v === "Pressed").length;
             dailyCounts[date] = count;
             totalPresses += count;
         });
 
         document.getElementById('plasticCount').textContent = totalPresses;
-
-        const lastDates = Object.keys(dailyCounts).slice(-4);
-        const lastValues = lastDates.map(d => dailyCounts[d]);
-        weeklyPlasticChart.data.labels = lastDates;
-        weeklyPlasticChart.data.datasets[0].data = lastValues;
-        weeklyPlasticChart.update();
-
         fullData = dailyCounts;
+        updateChart('week'); // default
         generateCalendar(currentYear, currentMonth);
     });
 
-    // Calendar logic
+    function groupData(mode, data) {
+        const result = {};
+        const dates = Object.keys(data);
+        if (mode === 'day') {
+            dates.forEach(d => result[d] = data[d]);
+        } else if (mode === 'week') {
+            dates.forEach(d => {
+                const date = new Date(d);
+                const year = date.getFullYear();
+                const week = getWeekNumber(date);
+                const key = `${year}-W${week}`;
+                result[key] = (result[key] || 0) + data[d];
+            });
+        } else if (mode === 'month') {
+            dates.forEach(d => {
+                const [y, m] = d.split('-');
+                const key = `${y}-${m}`;
+                result[key] = (result[key] || 0) + data[d];
+            });
+        } else if (mode === 'year') {
+            dates.forEach(d => {
+                const [y] = d.split('-');
+                result[y] = (result[y] || 0) + data[d];
+            });
+        }
+        return result;
+    }
+
+    function getWeekNumber(date) {
+        const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+        const dayNum = d.getUTCDay() || 7;
+        d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+        const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+        return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    }
+
+    function updateChart(mode) {
+        const grouped = groupData(mode, fullData);
+        const labels = Object.keys(grouped).sort();
+        const values = labels.map(l => grouped[l]);
+
+        const labelMap = {
+            'day': 'Daily Plastic Detection',
+            'week': 'Weekly Plastic Detection',
+            'month': 'Monthly Plastic Detection',
+            'year': 'Yearly Plastic Detection'
+        };
+
+        plasticChart.data.labels = labels;
+        plasticChart.data.datasets[0].data = values;
+        plasticChart.data.datasets[0].label = labelMap[mode];
+        plasticChart.options.scales.x.title.text = 
+            mode === 'day' ? 'Dates' : 
+            mode === 'week' ? 'Weeks' : 
+            mode === 'month' ? 'Months' : 'Years';
+        plasticChart.update();
+    }
+
+    document.getElementById('trend-filter').addEventListener('change', (e) => {
+        updateChart(e.target.value);
+    });
+
+    // === Calendar ===
     const today = new Date();
     let currentYear = today.getFullYear();
     let currentMonth = today.getMonth();
 
     const yearSelect = document.getElementById('year-filter');
     for (let y = currentYear - 5; y <= currentYear + 2; y++) {
-        const option = document.createElement('option');
-        option.value = y;
-        option.textContent = y;
+        const option = new Option(y, y);
         if (y === currentYear) option.selected = true;
         yearSelect.appendChild(option);
     }
 
     const monthSelect = document.getElementById('month-filter');
-    const monthNames = [ "January","February","March","April","May","June","July","August","September","October","November","December" ];
-    monthNames.forEach((m,i)=> monthSelect.appendChild(new Option(m,i)));
+    const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    monthNames.forEach((m, i) => monthSelect.appendChild(new Option(m, i)));
     monthSelect.value = currentMonth;
 
     function updateCalendarTitle() {
@@ -233,63 +273,70 @@ function initializeDashboard() {
         const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
         const thead = document.createElement("thead");
         const headerRow = document.createElement("tr");
-        days.forEach(d=>{ const th=document.createElement("th"); th.textContent=d; th.classList.add("p-2"); headerRow.appendChild(th); });
+        days.forEach(d => {
+            const th = document.createElement("th");
+            th.textContent = d;
+            th.classList.add("p-2");
+            headerRow.appendChild(th);
+        });
         thead.appendChild(headerRow);
         table.appendChild(thead);
 
         const tbody = document.createElement("tbody");
         const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month+1, 0).getDate();
-        let date=1;
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        let date = 1;
+        for (let i = 0; i < 6; i++) {
+            const row = document.createElement("tr");
+            for (let j = 0; j < 7; j++) {
+                const cell = document.createElement("td");
+                cell.classList.add("p-2", "calendar-cell");
+                if ((i === 0 && j < firstDay) || date > daysInMonth) {
+                    cell.textContent = "";
+                } else {
+                    cell.textContent = date;
+                    const dateStr = `${year}-${(month + 1).toString().padStart(2,'0')}-${date.toString().padStart(2,'0')}`;
+                    cell.dataset.date = dateStr;
 
-        for(let i=0;i<6;i++){
-            const row=document.createElement("tr");
-            for(let j=0;j<7;j++){
-                const cell=document.createElement("td");
-                cell.classList.add("p-2","calendar-cell");
-                if((i===0 && j<firstDay)||date>daysInMonth){ cell.textContent=""; }
-                else{
-                    cell.textContent=date;
-                    const dateStr=`${year}-${(month+1).toString().padStart(2,'0')}-${date.toString().padStart(2,'0')}`;
-                    cell.dataset.date=dateStr;
-
-                    cell.addEventListener('mouseenter',(e)=>{
-                        const presses=fullData[e.target.dataset.date]||0;
-                        const popup=document.getElementById('hover-popup');
-                        popup.innerHTML=`Plastic Counts: ${presses}`;
-                        popup.style.display="block";
-                        popup.style.top=(e.pageY+10)+"px";
-                        popup.style.left=(e.pageX+10)+"px";
+                    cell.addEventListener('mouseenter', (e) => {
+                        const presses = fullData[e.target.dataset.date] || 0;
+                        const popup = document.getElementById('hover-popup');
+                        popup.innerHTML = `Plastic Counts: ${presses}`;
+                        popup.style.display = "block";
+                        popup.style.top = (e.pageY + 10) + "px";
+                        popup.style.left = (e.pageX + 10) + "px";
                     });
-                    cell.addEventListener('mouseleave',()=>{ document.getElementById('hover-popup').style.display="none"; });
+                    cell.addEventListener('mouseleave', () => {
+                        document.getElementById('hover-popup').style.display = "none";
+                    });
                     date++;
                 }
                 row.appendChild(cell);
             }
             tbody.appendChild(row);
-            if(date>daysInMonth) break;
+            if (date > daysInMonth) break;
         }
         table.appendChild(tbody);
     }
 
-    document.getElementById('prev-month').addEventListener('click',()=>{
-        currentMonth--; if(currentMonth<0){currentMonth=11; currentYear--;}
-        monthSelect.value=currentMonth; yearSelect.value=currentYear;
-        generateCalendar(currentYear,currentMonth);
+    document.getElementById('prev-month').addEventListener('click', () => {
+        currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+        monthSelect.value = currentMonth; yearSelect.value = currentYear;
+        generateCalendar(currentYear, currentMonth);
     });
 
-    document.getElementById('next-month').addEventListener('click',()=>{
-        currentMonth++; if(currentMonth>11){currentMonth=0; currentYear++;}
-        monthSelect.value=currentMonth; yearSelect.value=currentYear;
-        generateCalendar(currentYear,currentMonth);
+    document.getElementById('next-month').addEventListener('click', () => {
+        currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+        monthSelect.value = currentMonth; yearSelect.value = currentYear;
+        generateCalendar(currentYear, currentMonth);
     });
 
-    monthSelect.addEventListener('change',()=>{ currentMonth=parseInt(monthSelect.value); generateCalendar(currentYear,currentMonth); });
-    yearSelect.addEventListener('change',()=>{ currentYear=parseInt(yearSelect.value); generateCalendar(currentYear,currentMonth); });
+    monthSelect.addEventListener('change', () => { currentMonth = parseInt(monthSelect.value); generateCalendar(currentYear, currentMonth); });
+    yearSelect.addEventListener('change', () => { currentYear = parseInt(yearSelect.value); generateCalendar(currentYear, currentMonth); });
 
-    generateCalendar(currentYear,currentMonth);
+    generateCalendar(currentYear, currentMonth);
 }
 
-window.addEventListener('load',initializeDashboard);
+window.addEventListener('load', initializeDashboard);
 </script>
 @endsection
