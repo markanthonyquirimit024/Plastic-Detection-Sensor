@@ -106,6 +106,7 @@ function initializeDataExplorer() {
     const filterForm = document.getElementById('filterForm');
     const summaryBtn = document.getElementById('summaryBtn');
     const addEntryBtn = document.getElementById('addEntryBtn');
+    const isAdmin = @json(Auth::check() && Auth::user()->utype === 'Admin');
 
 
     let tableData = [];
@@ -189,8 +190,8 @@ logsRef.on('value', snapshot => {
                 <td>${row.User}</td>
                 <td>
                     <button class="btn btn-outline-info btn-sm rounded-3 viewBtn"><i class="bi bi-eye"></i> View</button>
-                    <button class="btn btn-outline-primary btn-sm rounded-3 editDateBtn"><i class="bi bi-pencil"></i> Edit</button>
-                    <button class="btn btn-outline-danger btn-sm rounded-3 deleteBtn"><i class="bi bi-trash"></i> Delete</button>
+                    ${isAdmin ? '<button class="btn btn-outline-primary btn-sm rounded-3 editDateBtn"><i class="bi bi-pencil"></i> Edit</button>' : ''}
+                    ${isAdmin ? '<button class="btn btn-outline-danger btn-sm rounded-3 deleteBtn"><i class="bi bi-trash"></i> Delete</button>' : ''}
                 </td>
             </tr>
         `).join('');
@@ -420,8 +421,8 @@ if (e.target.closest('.viewBtn')) {
                     <td><span class="badge ${entry.type === 'Plastic' ? 'bg-success' : 'bg-warning text-dark'}">${entry.type}</span></td>
                     <td><span class="${entry.status === 'Detected' ? 'text-success fw-semibold' : 'text-danger fw-semibold'}">${entry.status}</span></td>
                     <td>
-                        <button class="btn btn-sm btn-outline-primary editEntryBtn"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger deleteEntryBtn"><i class="bi bi-trash"></i></button>
+                        ${isAdmin ? '<button class="btn btn-sm btn-outline-primary editEntryBtn"><i class="bi bi-pencil"></i></button>' : ''}
+                        ${isAdmin ? '<button class="btn btn-sm btn-outline-danger deleteEntryBtn"><i class="bi bi-trash"></i></button>' : ''}
                     </td>
                 </tr>
             `;
