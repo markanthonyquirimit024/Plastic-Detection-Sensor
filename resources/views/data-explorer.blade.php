@@ -23,12 +23,15 @@
 
     <!-- Content -->
     <div class="content-section">
-
+        @auth
+        @if(Auth::user()->utype === 'Admin')
         <div class="d-flex justify-content-end mb-3">
             <button id="addEntryBtn" class="btn btn-success rounded-3">
                 <i class="bi bi-plus-circle"></i> Add Manual Entry
             </button>
         </div>
+        @endif
+        @endauth
 
         <!-- Search & Filters -->
         <div class="card mb-4">
@@ -100,7 +103,6 @@ function initializeDataExplorer() {
     const prevBtn = document.getElementById('prevPage');
     const nextBtn = document.getElementById('nextPage');
     const pageInfo = document.getElementById('pageInfo');
-    const searchInput = document.getElementById('search');
     const fromDate = document.getElementById('from-date');
     const toDate = document.getElementById('to-date');
     const filterForm = document.getElementById('filterForm');
@@ -255,19 +257,16 @@ logsRef.on('value', snapshot => {
     nextBtn.addEventListener('click', () => { if(currentPage<Math.ceil(filteredData.length/itemsPerPage)){currentPage++; renderTable();} });
 
     // Filters
-    filterForm.addEventListener('submit', e => {
+        filterForm.addEventListener('submit', e => {
         e.preventDefault();
-        const keyword = searchInput.value.toLowerCase();
+
         const from = fromDate.value;
         const to = toDate.value;
 
-        filteredData.sort((a, b) => b.RawDate.localeCompare(a.RawDate));
-
         filteredData = tableData.filter(row => {
             let match = true;
-            if(keyword) match = match && (row.Location.toLowerCase().includes(keyword) || row.User.toLowerCase().includes(keyword));
-            if(from) match = match && row.RawDate >= from;
-            if(to) match = match && row.RawDate <= to;
+            if (from) match = match && row.RawDate >= from;
+            if (to) match = match && row.RawDate <= to;
             return match;
         });
 
@@ -440,7 +439,7 @@ if (e.target.closest('.viewBtn')) {
                             <th>User</th>
                             <th>Type</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            ${isAdmin ? '<th>Action</th>' : ''}
                         </tr>
                     </thead>
                     <tbody>${listHtml}</tbody>

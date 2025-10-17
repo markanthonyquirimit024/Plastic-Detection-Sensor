@@ -48,7 +48,7 @@
     <small>Sensor Status</small>
     <p class="mt-1">Legend</p>
     <p class="text-center">🔴 - Off</p>
-    <p class="ms-5 text-center">⚪ - Add Count</p>
+    <p class="text-center">⚪ - On</p>
   </div>
 
   <nav class="flex-grow-1">
