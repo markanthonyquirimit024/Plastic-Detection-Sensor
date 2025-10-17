@@ -69,6 +69,16 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-12 col-md-4">
+                <div class="card border-1 h-100 text-center">
+                    <div class="card-body d-flex flex-column justify-content-center">
+                        <h6 class="text-muted">Total Active Days This Month</h6>
+                        <h3 id="activeDaysCount" class="fw-bold text-primary">0</h3>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- Chart and Calendar -->
@@ -166,22 +176,44 @@ function initializeDashboard() {
 
     let fullData = {};
     db.ref('logs/ButtonPress').on('value', snapshot => {
-        const data = snapshot.val() || {};
-        let totalPresses = 0;
-        let dailyCounts = {};
+    const data = snapshot.val() || {};
+    let totalPressed = 0;
+    const dailyCounts = {};
 
-        Object.keys(data).forEach(date => {
-            const logs = data[date] || {};
-            const count = Object.values(logs).filter(v => v === "Pressed").length;
-            dailyCounts[date] = count;
-            totalPresses += count;
+    Object.entries(data).forEach(([date, logs]) => {
+        if (!logs) return;
+
+        let dailyTotal = 0;
+
+        Object.values(logs).forEach(entry => {
+            if (typeof entry === 'string' && entry === 'Pressed') {
+                dailyTotal++;
+            } else if (typeof entry === 'object' && entry.status === 'Detected') {
+                dailyTotal++;
+            }
         });
 
-        document.getElementById('plasticCount').textContent = totalPresses;
-        fullData = dailyCounts;
-        updateChart('week'); // default
-        generateCalendar(currentYear, currentMonth);
+        dailyCounts[date] = dailyTotal;
+        totalPressed += dailyTotal;
     });
+
+    document.getElementById('plasticCount').textContent = totalPressed;
+
+    fullData = dailyCounts;
+    updateChart('week');
+    generateCalendar(currentYear, currentMonth);
+
+    // Active days
+    const now = new Date();
+    const currentMonthNum = now.getMonth() + 1;
+    const currentYearNum = now.getFullYear();
+    let activeDays = 0;
+    Object.keys(dailyCounts).forEach(dateStr => {
+        const [y, m] = dateStr.split('-').map(Number);
+        if (y === currentYearNum && m === currentMonthNum && dailyCounts[dateStr] > 0) activeDays++;
+    });
+    document.getElementById('activeDaysCount').textContent = activeDays;
+});
 
     function groupData(mode, data) {
         const result = {};

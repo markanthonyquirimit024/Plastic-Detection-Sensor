@@ -16,7 +16,6 @@
     <!-- Export Buttons -->
     <div class="mb-3 text-center">
         <button id="exportExcel" class="btn btn-success">⬇ Export to Excel</button>
-        <button id="exportPDF" class="btn btn-danger">⬇ Export to PDF</button>
     </div>
 
     <!-- Stats Row -->
@@ -24,16 +23,7 @@
         <div class="col-md-3 d-flex">
             <div class="card text-center flex-fill">
                 <div class="card-body">
-                    <h6 class="text-muted">Total Reports</h6>
-                    <h3 id="totalReports" class="stat-number text-highlight">0</h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 d-flex">
-            <div class="card text-center flex-fill">
-                <div class="card-body">
-                    <h6 class="text-muted">Successful Detections</h6>
+                    <h6 class="text-muted">Successful Detections within the day</h6>
                     <h3 id="successReports" class="stat-number text-highlight">0</h3>
                 </div>
             </div>
@@ -42,17 +32,23 @@
 
     <!-- Chart -->
     <div class="mt-5 chart-card">
-        <h5 class="mb-3 text-dark">Today's Report Trends</h5>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0 text-dark" id="chartTitle">Today's Report Trends (6 AM - 6 PM)</h5>
+            <button id="toggleView" class="btn btn-outline-primary btn-sm">
+                Switch to 24 Hours
+            </button>
+        </div>
         <canvas id="reportChart" height="50"></canvas>
     </div>
 
-  
     <!-- Report Table -->
     <div class="card-body  table-wrapper mt-5">
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5 class="mb-0 text-dark">Summarization Recent Records</h5>
-            <!-- Date Filter -->
-            <input type="date" id="dateFilter" class="form-control form-control-sm" style="max-width: 180px;">
+            <h5 class="mb-0 text-dark">Summarization of Today's Records</h5>
+            <div class="d-flex gap-2">
+                <input type="date" id="dateFilter" class="form-control form-control-sm" style="max-width: 180px;">
+                <button id="filterBtn" class="btn btn-primary btn-sm">Filter</button>
+            </div>
         </div>
 
         <table class="table table-striped table-dark mb-0" id="reportTable">
@@ -86,96 +82,147 @@
 
 <script>
 function initializeReport() {
-    // Firebase config from Laravel
     const firebaseConfig = @json($firebaseConfig);
 
-    // Initialize Firebase (compat version)
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
 
     const database = firebase.database();
 
-    // DOM Elements
     const reportBody = document.getElementById('reportBody');
-    const totalReports = document.getElementById('totalReports');
     const successReports = document.getElementById('successReports');
     const prevBtn = document.getElementById('prevPage');
     const nextBtn = document.getElementById('nextPage');
     const pageInfo = document.getElementById('pageInfo');
     const dateFilter = document.getElementById('dateFilter');
+    const filterBtn = document.getElementById('filterBtn');
 
-    // Data
     window.tableData = [];
     let filteredData = [];
     let currentPage = 1;
     const itemsPerPage = 10;
+    let activeListenerRef = null;
 
-    // Chart
+    function generateWorkingHours() {
+        const arr = [];
+        for (let hour = 6; hour <= 18; hour++) {
+            arr.push(`${hour.toString().padStart(2,'0')}:00`);
+            if (hour < 18) arr.push(`${hour.toString().padStart(2,'0')}:30`);
+        }
+        return arr;
+    }
+
+    function generateFullDay() {
+        const arr = [];
+        for (let hour = 0; hour < 24; hour++) {
+            arr.push(`${hour.toString().padStart(2,'0')}:00`);
+            if (hour < 23) arr.push(`${hour.toString().padStart(2,'0')}:30`);
+        }
+        return arr;
+    }
+
+    let isFullDay = false;
+    let chartLabels = generateWorkingHours();
+    const chartData = { labels: chartLabels, success: Array(chartLabels.length).fill(0) };
     const ctx = document.getElementById('reportChart').getContext('2d');
-    const chartData = { labels: [], success: [] };
+
     const chart = new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
             labels: chartData.labels,
-            datasets: [
-                { label: 'Successful Detections', data: chartData.success, backgroundColor: '#2d6a4f' }
-            ]
+            datasets: [{
+                label: 'Successful Detections',
+                data: chartData.success,
+                borderColor: '#2d6a4f',
+                backgroundColor: '#2d6a4f',
+                tension: 0.3,
+                fill: false,
+                pointRadius: 5,
+                pointHoverRadius: 7
+            }]
         },
         options: {
             responsive: true,
-            plugins: { legend: { labels: { color: 'black' } } },
-            scales: { x: { ticks: { color: 'black' } }, y: { ticks: { color: 'black' } } }
+            scales: {
+                x: { ticks: { color: 'black', maxRotation: 90, minRotation: 45, autoSkip: true, maxTicksLimit: 25 } },
+                y: { beginAtZero: true, ticks: { color: 'black', stepSize: 1 } }
+            },
+            plugins: {
+                legend: { labels: { color: 'black' } },
+                tooltip: { callbacks: { label: function(context) { return `Detections: ${context.parsed.y}`; } } }
+            }
         }
     });
 
-    // Firebase Data (compat version)
-    database.ref('logs/ButtonPress').on('value', function(snapshot) {
-        const data = snapshot.val();
-        window.tableData = [];
-        let successCount = 0, totalCount = 0;
-        chartData.labels = []; chartData.success = [];
+    function getToday() {
+        return new Date().toLocaleDateString('en-CA');
+    }
 
-        if (data) {
-            Object.keys(data).forEach(date => {
-                const logs = data[date];
-                let daySuccess = 0;
+    function removeActiveListener() {
+        if (activeListenerRef) {
+            activeListenerRef.off();
+            activeListenerRef = null;
+        }
+    }
 
-                Object.keys(logs).forEach(time => {
-                    if (logs[time] === 'Pressed') {
-                        totalCount++;
+    function listenForDay(date) {
+        removeActiveListener();
+        activeListenerRef = database.ref(`logs/ButtonPress/${date}`);
+        activeListenerRef.on('value', function(snapshot) {
+            const logs = snapshot.val();
+            window.tableData = [];
+            let successCount = 0;
+
+            chartData.success = Array(chartLabels.length).fill(0);
+
+            if (logs) {
+                Object.entries(logs).forEach(([time, entry]) => {
+                    let isSuccess = false;
+
+                    if (typeof entry === 'string' && entry === 'Pressed') isSuccess = true;
+                    else if (typeof entry === 'object' && entry.status === 'Detected') isSuccess = true;
+
+                    if (isSuccess) {
                         successCount++;
-                        daySuccess++;
                         window.tableData.push({
                             Date: date,
                             Time: time,
                             Status: 'Success',
-                            Details: 'Plastic Detected'
+                            Details: typeof entry === 'object' && entry.details ? entry.details : 'Plastic Detected'
                         });
+
+                        const [h, m] = time.split(':').map(Number);
+                        let slotLabel = m < 30 ? `${h.toString().padStart(2,'0')}:00` : `${h.toString().padStart(2,'0')}:30`;
+                        const index = chartData.labels.indexOf(slotLabel);
+                        if (index !== -1) chartData.success[index]++;
                     }
                 });
-
-                if (daySuccess > 0) {
-                    chartData.labels.push(date);
-                    chartData.success.push(daySuccess);
-                }
-            });
+            }
 
             filteredData = [...window.tableData];
             currentPage = 1;
             renderTable();
-        } else {
-            reportBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No data available</td></tr>`;
+
+            successReports.textContent = successCount;
+            chart.data.datasets[0].data = chartData.success;
+            chart.update();
+        });
+    }
+
+    let currentDay = getToday();
+    dateFilter.value = currentDay;
+    listenForDay(currentDay);
+
+    setInterval(() => {
+        const today = getToday();
+        if (today !== currentDay) {
+            currentDay = today;
+            dateFilter.value = currentDay;
+            listenForDay(currentDay);
         }
+    }, 60 * 1000);
 
-        totalReports.textContent = totalCount;
-        successReports.textContent = successCount;
-        chart.data.labels = chartData.labels;
-        chart.data.datasets[0].data = chartData.success;
-        chart.update();
-    });
-
-    // Table Rendering
     function renderTable() {
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
@@ -190,25 +237,53 @@ function initializeReport() {
             </tr>`).join('')
             : `<tr><td colspan="4" class="text-center text-muted">No results</td></tr>`;
 
-        const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+        const totalPages = Math.ceil(filteredData.length / itemsPerPage) || 1;
         pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
         prevBtn.disabled = currentPage === 1;
         nextBtn.disabled = currentPage === totalPages;
     }
 
-    // Pagination Events
     prevBtn.addEventListener('click', () => { if(currentPage>1){ currentPage--; renderTable(); } });
-    nextBtn.addEventListener('click', () => { 
-        const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-        if(currentPage<totalPages){ currentPage++; renderTable(); } 
+    nextBtn.addEventListener('click', () => { const totalPages = Math.ceil(filteredData.length / itemsPerPage); if(currentPage<totalPages){ currentPage++; renderTable(); } });
+
+    filterBtn.addEventListener('click', () => {
+        const selectedDate = dateFilter.value;
+        if (!selectedDate) { alert('Please select a date.'); return; }
+        currentDay = selectedDate;
+        listenForDay(selectedDate);
     });
 
-    // Date Filter Event
-    dateFilter.addEventListener('change', () => {
-        const selectedDate = dateFilter.value;
-        filteredData = selectedDate ? window.tableData.filter(r => r.Date === selectedDate) : [...window.tableData];
-        currentPage = 1;
-        renderTable();
+    const toggleBtn = document.getElementById('toggleView');
+    const chartTitle = document.getElementById('chartTitle');
+
+    toggleBtn.addEventListener('click', () => {
+        isFullDay = !isFullDay;
+
+        chartLabels = isFullDay ? generateFullDay() : generateWorkingHours();
+        toggleBtn.textContent = isFullDay ? "Switch to Working Hours" : "Switch to 24 Hours";
+        chartTitle.textContent = isFullDay ? "Today's Report Trends (24 Hours)" : "Today's Report Trends (6 AM - 6 PM)";
+
+        chartData.labels = chartLabels;
+        chartData.success = Array(chartLabels.length).fill(0);
+        chart.data.labels = chartLabels;
+        chart.data.datasets[0].data = chartData.success;
+
+        window.tableData.forEach(row => {
+            const [h, m] = row.Time.split(':').map(Number);
+            let slotLabel = m < 30 ? `${h.toString().padStart(2,'0')}:00` : `${h.toString().padStart(2,'0')}:30`;
+            const index = chartLabels.indexOf(slotLabel);
+            if (index !== -1) chartData.success[index]++;
+        });
+
+        chart.update();
+    });
+
+    document.getElementById('exportExcel').addEventListener('click', () => {
+        if (!window.tableData.length) return alert("No data to export!");
+        const ws = XLSX.utils.json_to_sheet(window.tableData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Reports");
+        XLSX.writeFile(wb, "Detection_Reports.xlsx");
     });
 }
 
