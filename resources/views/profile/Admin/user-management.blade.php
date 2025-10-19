@@ -7,13 +7,11 @@
 
 <div class="container mt-3">
 
-    <!-- Page Title -->
     <div class="mb-4">
         <h1 class="fw-bold text-dark">User Management</h1>
         <p class="text-muted">Manage your analysts and user accounts below.</p>
     </div>
 
-    <!-- Card for User Table -->
     <div class="card border-1 rounded-4 p-4" id="usertable">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
             <h3 class="fw-bold text-dark mb-2">Manage Analysts</h3>
@@ -25,7 +23,7 @@
                     <input type="text" name="search" class="form-control me-2" placeholder="Search users..." value="{{ request('search') }}">
                     <button type="submit" class="btn btn-success rounded-3">
                         <i class="bi bi-search me-1"></i> Search
-                    </button>        
+                    </button>         
                 </form>
             </div>
         </div>
@@ -50,13 +48,13 @@
                         <td>{{ $analyst->last_name }}</td>
                         <td>{{ $analyst->email }}</td>
                         <td>
-                            <!-- Edit Button -->
                             <button class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#editUserModal{{ $analyst->id }}">
                                 ✏️ Edit
                             </button>
 
-                            <!-- Edit Modal -->
-                            <div class="modal fade" id="editUserModal{{ $analyst->id }}" tabindex="-1" aria-hidden="true">
+                            <!-- EDIT MODAL -->
+                            <div class="modal fade" id="editUserModal{{ $analyst->id }}" tabindex="-1" aria-hidden="true"
+                                data-bs-backdrop="static" data-bs-keyboard="false">
                                 <div class="modal-dialog modal-dialog-centered modal-lg">
                                     <div class="modal-content edit-modal">
                                         <div class="modal-header">
@@ -113,7 +111,6 @@
                                 </div>
                             </div>
 
-                            <!-- Delete Button -->
                             <form action="{{ route('admin.delete-user', $analyst->id) }}" method="POST" class="d-inline delete-form">
                                 @csrf
                                 @method('DELETE')
@@ -136,8 +133,9 @@
     </div>
 </div>
 
-<!-- Create Analyst Modal -->
-<div class="modal fade" id="popupForm" tabindex="-1" aria-labelledby="popupFormLabel" aria-hidden="true">
+<!-- CREATE ANALYST MODAL -->
+<div class="modal fade" id="popupForm" tabindex="-1" aria-labelledby="popupFormLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content p-3">
             <div class="modal-header">
@@ -194,7 +192,8 @@
     </div>
 </div>
 
-<!-- Password Toggle and Checklist JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const editForms = document.querySelectorAll('.edit-user-form');
@@ -219,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     fetch(form.action, {
                         method: 'POST',
                         headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                         },
                         body: formData
                     })
@@ -297,7 +296,7 @@ document.getElementById('register-form').addEventListener('submit', function(e) 
             fetch(form.action, {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
                 body: formData
             })
@@ -313,7 +312,11 @@ document.getElementById('register-form').addEventListener('submit', function(e) 
                     });
                 } else {
                     return response.json().then(data => {
-                        throw new Error(data.message || 'Something went wrong');
+                        let errorMessage = data.message || 'Something went wrong';
+                        if (data.errors) {
+                            errorMessage += '<br><ul>' + Object.values(data.errors).map(err => `<li>${err[0]}</li>`).join('') + '</ul>';
+                        }
+                        throw new Error(errorMessage);
                     });
                 }
             })
@@ -321,7 +324,7 @@ document.getElementById('register-form').addEventListener('submit', function(e) 
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: error.message,
+                    html: error.message,
                     confirmButtonColor: '#d33'
                 });
             });
@@ -337,7 +340,7 @@ document.querySelectorAll(".toggle-password").forEach(button => {
     });
 });
 
-// Create Analyst Password Checklist
+// Password checklist
 const checklist = { length: false, lowercase: false, uppercase: false, number: false, special: false };
 const passwordField = document.getElementById("password");
 passwordField.addEventListener("input", function() {
@@ -358,13 +361,11 @@ function updateChecklist(id, valid) {
     item.textContent = `${valid ? '✔' : '✖'} ${item.textContent.slice(2)}`;
 }
 
-// Form Submit Validation
 document.getElementById("register-form").addEventListener("submit", function(event) {
     const password = document.getElementById("password").value;
     const confirm = document.getElementById("password_confirmation").value;
 
-    // ✅ Check password requirements
-    if (!Object.values(checklist).every(Boolean)) {
+    if (password && !Object.values(checklist).every(Boolean)) {
         event.preventDefault();
         Swal.fire({
             icon: 'warning',
@@ -372,9 +373,9 @@ document.getElementById("register-form").addEventListener("submit", function(eve
             text: 'Password does not meet all requirements.',
             confirmButtonColor: '#d33'
         });
+        return;
     } 
-    // ❌ Check if passwords match
-    else if (password !== confirm) {
+    if (password !== confirm) {
         event.preventDefault();
         Swal.fire({
             icon: 'error',
@@ -382,10 +383,10 @@ document.getElementById("register-form").addEventListener("submit", function(eve
             text: 'Passwords do not match!',
             confirmButtonColor: '#d33'
         });
+        return;
     }
 });
 
-// Edit Analyst Password Validation
 document.addEventListener("DOMContentLoaded", () => {
     const requirements = {
         length: /.{8,}/,
@@ -399,22 +400,22 @@ document.addEventListener("DOMContentLoaded", () => {
         const passwordInput = form.querySelector("[name='password']");
         const confirmInput = form.querySelector("[name='password_confirmation']");
         const checklistEl = form.querySelector("ul[id^='edit-password-checklist']");
-        const checklistItems = checklistEl.querySelectorAll("li");
+        const checklistItems = checklistEl ? checklistEl.querySelectorAll("li") : [];
 
-        // ✅ Show/hide and validate password requirements
-        passwordInput.addEventListener("input", () => {
-            const value = passwordInput.value;
-            checklistEl.style.display = value ? "block" : "none";
+        if (passwordInput) {
+            passwordInput.addEventListener("input", () => {
+                const value = passwordInput.value;
+                if (checklistEl) checklistEl.style.display = value ? "block" : "none";
 
-            checklistItems.forEach(item => {
-                const key = item.className;
-                const isValid = requirements[key].test(value);
-                item.style.color = isValid ? "lime" : "red";
-                item.textContent = `${isValid ? '✔' : '✖'} ${item.textContent.slice(2)}`;
+                checklistItems.forEach(item => {
+                    const key = item.className;
+                    const isValid = requirements[key].test(value);
+                    item.style.color = isValid ? "lime" : "red";
+                    item.textContent = `${isValid ? '✔' : '✖'} ${item.textContent.slice(2)}`;
+                });
             });
-        });
+        }
 
-        // 🛡️ SweetAlert validation on submit
         form.addEventListener("submit", (event) => {
             const newPassword = passwordInput.value.trim();
             const confirmPassword = confirmInput.value.trim();
@@ -438,7 +439,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     Swal.fire({
                         icon: 'error',
                         title: 'Password Mismatch',
-                        text: 'Passwords do not match.',
+                        text: 'Passwords do not match!',
                         confirmButtonColor: '#d33'
                     });
                     return;

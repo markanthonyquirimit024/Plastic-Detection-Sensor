@@ -5,34 +5,61 @@
 <title>Dashboard</title>
 
 <style>
-/* Responsive for iPad Mini only (768px) */
-@media (min-width: 768px) and (max-width: 991.98px) {
-    .row.g-4.mb-4 > .col-12.col-md-6 {
-        flex: 0 0 100%;
-        max-width: 100%;
+/* ================================
+   DASHBOARD CARD LAYOUT FIX
+=================================== */
+
+/* Summary cards in one horizontal row */
+.summary-cards {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Each card container */
+.summary-card {
+    flex: 1;
+    min-width: 250px;
+}
+
+/* Card style */
+.summary-card .card {
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    height: 100%;
+    transition: 0.3s;
+    background: #fff;
+}
+
+.summary-card .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive fix for tablets and below */
+@media (max-width: 991.98px) {
+    .summary-cards {
+        flex-direction: column;
     }
-    .row.g-4 > .col-12.col-md-8,
-    .row.g-4 > .col-12.col-md-4 {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
+
     #plasticChart {
         height: 350px !important;
     }
+
     #calendar-table {
         width: 100% !important;
         font-size: 0.85rem;
     }
+
     .card.h-100 {
         height: auto !important;
         min-height: 200px;
         padding: 0.5rem;
     }
+
     .card-body {
         padding: 0.75rem !important;
-    }
-    .row.g-4 > .col-12 {
-        margin-bottom: 0.75rem;
     }
 }
 </style>
@@ -46,12 +73,12 @@
             <hr>
         </header>
 
-        <!-- Summary Cards -->
-        <div class="row g-4 mb-4">
+        <!-- ✅ Summary Cards (Horizontal Alignment) -->
+        <div class="summary-cards mb-4">
             @auth
             @if(Auth::user()->utype === 'Admin')
-            <div class="col-12 col-md-6">
-                <div class="card border-1 h-100 text-center">
+            <div class="summary-card">
+                <div class="card h-100 text-center">
                     <div class="card-body d-flex flex-column justify-content-center">
                         <h6>Total Users</h6>
                         <h3 class="fw-bold text-success">{{ $totalUsers }}</h3>
@@ -61,8 +88,8 @@
             @endif
             @endauth
 
-            <div class="col-12 col-md-6">
-                <div class="card border-1 h-100 text-center">
+            <div class="summary-card">
+                <div class="card h-100 text-center">
                     <div class="card-body d-flex flex-column justify-content-center">
                         <h6 class="text-muted">Total Confirmed Plastic Detected</h6>
                         <h3 id="plasticCount" class="fw-bold text-danger">0</h3>
@@ -70,18 +97,17 @@
                 </div>
             </div>
 
-            <div class="col-12 col-md-4">
-                <div class="card border-1 h-100 text-center">
+            <div class="summary-card">
+                <div class="card h-100 text-center">
                     <div class="card-body d-flex flex-column justify-content-center">
                         <h6 class="text-muted">Total Active Days This Month</h6>
                         <h3 id="activeDaysCount" class="fw-bold text-primary">0</h3>
                     </div>
                 </div>
             </div>
-
         </div>
 
-        <!-- Chart and Calendar -->
+        <!-- Chart and Calendar Section -->
         <div class="row g-4">
             <!-- Chart -->
             <div class="col-12 col-md-8">
@@ -133,9 +159,10 @@
     </div>
 </div>
 
-<!-- Hover popup -->
-<div id="hover-popup" class="position-absolute bg-dark text-white p-2 rounded small shadow"
-    style="display:none; z-index:1000;"></div>
+<!-- Hover Popup -->
+<div id="hover-popup" 
+     class="position-absolute bg-dark text-white p-2 rounded small shadow"
+     style="display:none; z-index:1000;"></div>
 
 <!-- Firebase + Chart.js -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -176,44 +203,41 @@ function initializeDashboard() {
 
     let fullData = {};
     db.ref('logs/ButtonPress').on('value', snapshot => {
-    const data = snapshot.val() || {};
-    let totalPressed = 0;
-    const dailyCounts = {};
+        const data = snapshot.val() || {};
+        let totalPressed = 0;
+        const dailyCounts = {};
 
-    Object.entries(data).forEach(([date, logs]) => {
-        if (!logs) return;
+        Object.entries(data).forEach(([date, logs]) => {
+            if (!logs) return;
+            let dailyTotal = 0;
 
-        let dailyTotal = 0;
+            Object.values(logs).forEach(entry => {
+                if (typeof entry === 'string' && entry === 'Pressed') {
+                    dailyTotal++;
+                } else if (typeof entry === 'object' && entry.status === 'Detected') {
+                    dailyTotal++;
+                }
+            });
 
-        Object.values(logs).forEach(entry => {
-            if (typeof entry === 'string' && entry === 'Pressed') {
-                dailyTotal++;
-            } else if (typeof entry === 'object' && entry.status === 'Detected') {
-                dailyTotal++;
-            }
+            dailyCounts[date] = dailyTotal;
+            totalPressed += dailyTotal;
         });
 
-        dailyCounts[date] = dailyTotal;
-        totalPressed += dailyTotal;
+        document.getElementById('plasticCount').textContent = totalPressed;
+        fullData = dailyCounts;
+        updateChart('week');
+        generateCalendar(currentYear, currentMonth);
+
+        const now = new Date();
+        const currentMonthNum = now.getMonth() + 1;
+        const currentYearNum = now.getFullYear();
+        let activeDays = 0;
+        Object.keys(dailyCounts).forEach(dateStr => {
+            const [y, m] = dateStr.split('-').map(Number);
+            if (y === currentYearNum && m === currentMonthNum && dailyCounts[dateStr] > 0) activeDays++;
+        });
+        document.getElementById('activeDaysCount').textContent = activeDays;
     });
-
-    document.getElementById('plasticCount').textContent = totalPressed;
-
-    fullData = dailyCounts;
-    updateChart('week');
-    generateCalendar(currentYear, currentMonth);
-
-    // Active days
-    const now = new Date();
-    const currentMonthNum = now.getMonth() + 1;
-    const currentYearNum = now.getFullYear();
-    let activeDays = 0;
-    Object.keys(dailyCounts).forEach(dateStr => {
-        const [y, m] = dateStr.split('-').map(Number);
-        if (y === currentYearNum && m === currentMonthNum && dailyCounts[dateStr] > 0) activeDays++;
-    });
-    document.getElementById('activeDaysCount').textContent = activeDays;
-});
 
     function groupData(mode, data) {
         const result = {};
@@ -266,9 +290,9 @@ function initializeDashboard() {
         plasticChart.data.labels = labels;
         plasticChart.data.datasets[0].data = values;
         plasticChart.data.datasets[0].label = labelMap[mode];
-        plasticChart.options.scales.x.title.text = 
-            mode === 'day' ? 'Dates' : 
-            mode === 'week' ? 'Weeks' : 
+        plasticChart.options.scales.x.title.text =
+            mode === 'day' ? 'Dates' :
+            mode === 'week' ? 'Weeks' :
             mode === 'month' ? 'Months' : 'Years';
         plasticChart.update();
     }
