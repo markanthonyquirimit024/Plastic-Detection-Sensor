@@ -11,7 +11,7 @@ class AdminSeeder extends Seeder
 {
     public function run()
     {
-        $adminExists = User::where('utype', 'ADM')->exists();
+        $adminExists = User::where('utype', 'Admin')->exists();
 
         if (!$adminExists) {
             User::create([
@@ -23,5 +23,5 @@ class AdminSeeder extends Seeder
                 'email_verified_at' => Carbon::now(),
             ]);
         }
-}
+    }
 }
